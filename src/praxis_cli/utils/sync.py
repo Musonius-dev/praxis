@@ -4,41 +4,90 @@ import json
 import shutil
 from pathlib import Path
 
+from praxis_cli.constants import (
+    COMMAND_FILES,
+    SLASH_COMMANDS,
+    build_global_rules,
+)
 from praxis_cli.utils.config import load_config
 
 
+def _build_claude_hooks(cfg: dict) -> dict:
+    """Build Claude Code hooks from PRAXIS verification config.
+
+    Maps enabled verification tools to PostToolUse hooks that fire
+    after Claude Code edits or writes files. Tests are excluded
+    (too slow for per-edit; use `praxis verify` instead).
+
+    Returns a dict suitable for merging into .claude/settings.json,
+    or an empty dict if no checks are enabled.
+    """
+    verification = cfg.get("verification", {})
+    hooks = []
+
+    for name in ("formatter", "linter", "type_checker", "security_scanner"):
+        check = verification.get(name, {})
+        if not isinstance(check, dict):
+            continue
+        if not check.get("enabled") or not check.get("command"):
+            continue
+
+        hooks.append({
+            "type": "command",
+            "command": check["command"],
+            "timeout": 30,
+        })
+
+    if not hooks:
+        return {}
+
+    return {
+        "hooks": {
+            "PostToolUse": [
+                {
+                    "matcher": "Edit|Write",
+                    "hooks": hooks,
+                }
+            ]
+        }
+    }
+
+
 def sync_claude_code(root: Path) -> list[str]:
-    """Generate CLAUDE.md and .claude/commands/ for Claude Code."""
+    """Generate CLAUDE.md, .claude/commands/, and .claude/settings.json for Claude Code."""
     generated = []
     cfg = load_config()
 
-    # CLAUDE.md
-    rules = []
-    if cfg.get("global", {}).get("always_ask_questions", True):
-        rules.append(
-            "- Always ask clarifying questions before building specs, plans, or deliverables. Never assume."
-        )
-    if cfg.get("global", {}).get("include_recommendations", True):
-        rules.append("- Include a recommendation in every set of options presented.")
-
-    commands_list = [
-        "/setup", "/new-track", "/implement", "/review", "/status",
-        "/verify", "/commit-push-pr", "/simplify", "/sync-context", "/deploy-preview",
-    ]
+    rules = build_global_rules(cfg)
 
     claude_md = "# Project Instructions\n\n"
     claude_md += "Read and follow the PRAXIS Protocol defined in PRAXIS.md.\n"
     claude_md += "All specs, plans, and context live in the praxis/ directory.\n\n"
     claude_md += "## PRAXIS Commands\n"
-    for cmd in commands_list:
+    for cmd in SLASH_COMMANDS:
         claude_md += f"- {cmd}\n"
     claude_md += "\n## Global Rules\n"
     claude_md += "- Never write code without an approved spec and plan.\n"
-    claude_md += "- Stop at phase checkpoints for human review.\n"
+    if cfg.get("defaults", {}).get("phase_gate", True):
+        claude_md += "- Stop at phase checkpoints for human review.\n"
+    else:
+        claude_md += "- Phase checkpoints are informational — continue unless the user stops you.\n"
     claude_md += "- Run verify at every checkpoint and before PRs.\n"
     claude_md += "- Read praxis/context/ before starting any task.\n"
     for rule in rules:
         claude_md += f"{rule}\n"
+
+    # Verification hooks note
+    verification = cfg.get("verification", {})
+    any_hooks = any(
+        isinstance(v, dict) and v.get("enabled")
+        for v in verification.values()
+    )
+    if any_hooks:
+        claude_md += "\n## Verification Hooks\n"
+        claude_md += "Post-edit hooks are configured in .claude/settings.json.\n"
+        claude_md += "They run automatically after you edit/write files: format, lint, type check, security scan.\n"
+        claude_md += "Run `praxis verify --full` for comprehensive checks including tests.\n"
 
     (root / "CLAUDE.md").write_text(claude_md)
     generated.append("CLAUDE.md")
@@ -52,85 +101,24 @@ def sync_claude_code(root: Path) -> list[str]:
             shutil.copy2(cmd_file, commands_dst / cmd_file.name)
         generated.append(".claude/commands/")
 
-    # .claude/settings.json hooks (verification automation)
-    settings_path = root / ".claude" / "settings.json"
-    settings_path.parent.mkdir(parents=True, exist_ok=True)
-    settings = {
-        "hooks": {
-            "PostToolUse": [
-                {
-                    "matcher": "Write|Edit|MultiEdit",
-                    "hooks": [
-                        {
-                            "type": "command",
-                            "command": "praxis verify --mode quick",
-                        }
-                    ],
-                }
-            ],
-            "Stop": [
-                {
-                    "hooks": [
-                        {
-                            "type": "command",
-                            "command": "praxis verify --mode full",
-                        }
-                    ]
-                }
-            ],
-        }
-    }
-    settings_path.write_text(json.dumps(settings, indent=2) + "\n")
-    generated.append(".claude/settings.json")
+    # .claude/settings.json (hooks from verification config)
+    hooks_config = _build_claude_hooks(cfg)
+    if hooks_config:
+        settings_dir = root / ".claude"
+        settings_dir.mkdir(parents=True, exist_ok=True)
+        settings_path = settings_dir / "settings.json"
 
-    return generated
+        # Merge with existing settings to preserve user customizations
+        existing = {}
+        if settings_path.exists():
+            try:
+                existing = json.loads(settings_path.read_text())
+            except (json.JSONDecodeError, OSError):
+                existing = {}
 
-
-def sync_gemini_cli(root: Path) -> list[str]:
-    """Generate GEMINI.md for Gemini CLI."""
-    cfg = load_config()
-    generated = []
-
-    rules = []
-    if cfg.get("global", {}).get("always_ask_questions", True):
-        rules.append(
-            "- Always ask clarifying questions before building specs, plans, or deliverables. Never assume."
-        )
-    if cfg.get("global", {}).get("include_recommendations", True):
-        rules.append("- Include a recommendation in every set of options presented.")
-
-    command_map = {
-        "praxis setup": "praxis/commands/setup.md",
-        "praxis new-track": "praxis/commands/new-track.md",
-        "praxis implement": "praxis/commands/implement.md",
-        "praxis review": "praxis/commands/review.md",
-        "praxis status": "praxis/commands/status.md",
-        "praxis verify": "praxis/commands/verify.md",
-        'praxis commit" or "praxis pr': "praxis/commands/commit-push-pr.md",
-        "praxis simplify": "praxis/commands/simplify.md",
-        "praxis sync": "praxis/commands/sync-context.md",
-        "praxis deploy": "praxis/commands/deploy-preview.md",
-    }
-
-    gemini_md = "# Project Instructions\n\n"
-    gemini_md += "Read and follow the PRAXIS Protocol defined in PRAXIS.md.\n"
-    gemini_md += "All specs, plans, and context live in the praxis/ directory.\n\n"
-    gemini_md += "## PRAXIS Commands\n"
-    gemini_md += "When I say one of the following, read the corresponding file and follow it exactly:\n\n"
-    for trigger, path in command_map.items():
-        gemini_md += f'- "{trigger}" → {path}\n'
-    gemini_md += "\n## Global Rules\n"
-    gemini_md += "- Never write code without an approved spec and plan.\n"
-    gemini_md += "- Stop at phase checkpoints for human review.\n"
-    gemini_md += "- Run verify at every checkpoint and before PRs.\n"
-    gemini_md += "- Read praxis/context/ before starting any task.\n"
-    for rule in rules:
-        gemini_md += f"{rule}\n"
-    gemini_md += "\n## Important\n"
-    gemini_md += "Do NOT use Gemini CLI's built-in Plan Mode. PRAXIS manages its own planning lifecycle.\n"
-
-    (root / "GEMINI.md").write_text(gemini_md)
-    generated.append("GEMINI.md")
+        existing["hooks"] = hooks_config["hooks"]
+        settings_path.write_text(json.dumps(existing, indent=2) + "\n")
+        generated.append(".claude/settings.json")
 
     return generated
 
@@ -140,26 +128,13 @@ def sync_openai_codex(root: Path) -> list[str]:
     cfg = load_config()
     generated = []
 
-    rules = []
-    if cfg.get("global", {}).get("always_ask_questions", True):
-        rules.append(
-            "- Always ask clarifying questions before building specs, plans, or deliverables. Never assume."
-        )
-    if cfg.get("global", {}).get("include_recommendations", True):
-        rules.append("- Include a recommendation in every set of options presented.")
+    rules = build_global_rules(cfg)
 
-    command_map = {
-        "praxis setup": "praxis/commands/setup.md",
-        "praxis new-track": "praxis/commands/new-track.md",
-        "praxis implement": "praxis/commands/implement.md",
-        "praxis review": "praxis/commands/review.md",
-        "praxis status": "praxis/commands/status.md",
-        "praxis verify": "praxis/commands/verify.md",
-        'praxis commit" or "praxis pr': "praxis/commands/commit-push-pr.md",
-        "praxis simplify": "praxis/commands/simplify.md",
-        "praxis sync": "praxis/commands/sync-context.md",
-        "praxis deploy": "praxis/commands/deploy-preview.md",
-    }
+    # Build command map from COMMAND_FILES
+    command_map = {}
+    for f in COMMAND_FILES:
+        name = f.removesuffix(".md")
+        command_map[f"praxis {name}"] = f"praxis/commands/{f}"
 
     agents_md = "# Project Instructions\n\n"
     agents_md += "Read and follow the PRAXIS Protocol defined in PRAXIS.md.\n"
@@ -175,68 +150,8 @@ def sync_openai_codex(root: Path) -> list[str]:
     agents_md += "- Read praxis/context/ before starting any task.\n"
     for rule in rules:
         agents_md += f"{rule}\n"
-    agents_md += "\n## PR Review Role\n"
-    agents_md += "When triggered by a GitHub Action on a PR, act as a code reviewer:\n"
-    agents_md += "1. Read PRAXIS.md and praxis/context/ for project standards\n"
-    agents_md += "2. Read praxis/verification.md for check requirements\n"
-    agents_md += "3. If the PR references a PRAXIS track, read the track's spec.md\n"
-    agents_md += "4. Review for: spec compliance, guideline adherence, security, code quality\n"
-    agents_md += "5. Post review comments with actionable feedback\n"
-
     (root / "AGENTS.md").write_text(agents_md)
     generated.append("AGENTS.md")
-
-    return generated
-
-
-def sync_github_action(root: Path) -> list[str]:
-    """Generate GitHub Action for Codex PR reviews."""
-    generated = []
-
-    workflows_dir = root / ".github" / "workflows"
-    workflows_dir.mkdir(parents=True, exist_ok=True)
-
-    action_yml = """name: PRAXIS PR Review (Codex)
-
-on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-
-permissions:
-  contents: read
-  pull-requests: write
-
-jobs:
-  codex-review:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Run Codex PR Review
-        uses: openai/codex-github-action@v1
-        with:
-          openai_api_key: ${{ secrets.OPENAI_API_KEY }}
-          model: "codex-5.3"
-          instructions: |
-            You are a code reviewer following the PRAXIS protocol.
-            Read PRAXIS.md and praxis/context/ for project standards.
-            Read praxis/verification.md for check requirements.
-            If the PR description references a PRAXIS track, read the track's spec.md and plan.md.
-
-            Review for:
-            1. Spec compliance
-            2. Guideline adherence (praxis/context/guidelines.md)
-            3. Security — hardcoded secrets, unsafe inputs, PII exposure
-            4. Code quality — complexity, duplication, naming, dead code
-            5. Simplification opportunities
-
-            Post actionable review comments. Be specific about file and line.
-            End with an overall assessment: APPROVE, REQUEST_CHANGES, or COMMENT.
-"""
-
-    (workflows_dir / "praxis-pr-review.yml").write_text(action_yml)
-    generated.append(".github/workflows/praxis-pr-review.yml")
 
     return generated
 
@@ -247,20 +162,17 @@ def sync_global_claude() -> Path:
     claude_dir = Path.home() / ".claude"
     claude_dir.mkdir(parents=True, exist_ok=True)
 
-    rules = ["## Requirements Gathering"]
-    if cfg.get("global", {}).get("always_ask_questions", True):
-        rules.append(
-            "Always ask clarifying questions before building specs, plans, deliverables, or any non-trivial output."
-        )
-        rules.append("Never assume scope, format, audience, or priorities — gather requirements first.")
-    if cfg.get("global", {}).get("include_recommendations", True):
-        rules.append("Present options as structured choices when the decision is bounded (2-4 options).")
-        rules.append("Always include a recommendation in each option presented.")
-    rules.append("Use open-ended questions only when the answer is truly freeform.")
+    rules = build_global_rules(cfg)
 
     content = "# Global Rules\n\n"
-    content += "\n".join(rules)
-    content += "\n\n## PRAXIS Protocol\n"
+    content += "## Requirements Gathering\n"
+    for rule in rules:
+        content += f"{rule}\n"
+    if cfg.get("global", {}).get("always_ask_questions", True):
+        content += "- Never assume scope, format, audience, or priorities — gather requirements first.\n"
+        content += "- Present options as structured choices when the decision is bounded (2-4 options).\n"
+    content += "- Use open-ended questions only when the answer is truly freeform.\n"
+    content += "\n## PRAXIS Protocol\n"
     content += "If a project contains a PRAXIS.md file, read and follow it.\n"
     content += "All praxis commands are defined in praxis/commands/ — read the corresponding file when invoked.\n"
 
@@ -276,11 +188,7 @@ def sync_all(root: Path) -> dict[str, list[str]]:
 
     if cfg.get("tools", {}).get("claude_code", True):
         results["Claude Code"] = sync_claude_code(root)
-    if cfg.get("tools", {}).get("gemini_cli", True):
-        results["Gemini CLI"] = sync_gemini_cli(root)
     if cfg.get("tools", {}).get("openai_codex", True):
         results["OpenAI Codex"] = sync_openai_codex(root)
-
-    results["GitHub Action"] = sync_github_action(root)
 
     return results

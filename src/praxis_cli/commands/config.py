@@ -133,10 +133,6 @@ def _interactive_config():
         "  Enable Claude Code?",
         default=cfg.get("tools", {}).get("claude_code", True),
     )
-    cfg["tools"]["gemini_cli"] = click.confirm(
-        "  Enable Gemini CLI?",
-        default=cfg.get("tools", {}).get("gemini_cli", True),
-    )
     cfg["tools"]["openai_codex"] = click.confirm(
         "  Enable OpenAI Codex?",
         default=cfg.get("tools", {}).get("openai_codex", True),
@@ -150,6 +146,42 @@ def _interactive_config():
         "  Stop at phase boundaries for review?",
         default=cfg.get("defaults", {}).get("phase_gate", True),
     )
+
+    console.print()
+
+    # Verification tools
+    console.print("[bold]Verification Tools[/bold]")
+    console.print("[dim]Configure checks that run after AI edits (Claude Code hooks) and via 'praxis verify'.[/dim]")
+    console.print()
+
+    if "verification" not in cfg:
+        cfg["verification"] = {}
+
+    for check_name, check_label, examples in [
+        ("formatter", "Formatter", "prettier, black, gofmt"),
+        ("linter", "Linter", "eslint, ruff, clippy"),
+        ("type_checker", "Type checker", "tsc, mypy, pyright"),
+        ("security_scanner", "Security scanner", "trivy, bandit, npm audit"),
+        ("tests", "Test runner", "jest, pytest, go test"),
+    ]:
+        current = cfg["verification"].get(check_name, {})
+        if not isinstance(current, dict):
+            current = {}
+        enabled = click.confirm(
+            f"  Enable {check_label}?",
+            default=current.get("enabled", False),
+        )
+        if enabled:
+            command = click.prompt(
+                f"    Command to run (e.g. {examples})",
+                default=current.get("command") or "",
+            )
+            cfg["verification"][check_name] = {
+                "enabled": True,
+                "command": command,
+            }
+        else:
+            cfg["verification"][check_name] = {"enabled": False}
 
     console.print()
 
@@ -172,6 +204,6 @@ def _sync_global():
         path = sync_global_claude()
         console.print(f"  ✅ {path}")
 
-    # Future: sync to ~/.gemini/ and ~/.codex/ when they support global configs
+    # Future: sync to ~/.codex/ when it supports global configs
 
     console.print("[green]✅ Global sync complete.[/green]")

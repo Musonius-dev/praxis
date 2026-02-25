@@ -1,5 +1,6 @@
 """Global config management for PRAXIS at ~/.praxis/config.toml."""
 
+import copy
 import sys
 from pathlib import Path
 from typing import Any
@@ -21,20 +22,17 @@ DEFAULT_CONFIG: dict[str, Any] = {
     },
     "tools": {
         "claude_code": True,
-        "gemini_cli": True,
         "openai_codex": True,
     },
     "defaults": {
-        "track_types": ["code", "architecture", "federal", "content"],
-        "verification_mode": "quick",
         "phase_gate": True,
     },
     "verification": {
-        "formatter": {"enabled": False, "tool": None, "command": None},
-        "linter": {"enabled": False, "tool": None, "command": None},
-        "type_checker": {"enabled": False, "tool": None, "command": None},
-        "security_scanner": {"enabled": False, "tool": None, "command": None},
-        "tests": {"enabled": False, "runner": None, "command": None, "coverage": False},
+        "formatter": {"enabled": False, "command": ""},
+        "linter": {"enabled": False, "command": ""},
+        "type_checker": {"enabled": False, "command": ""},
+        "security_scanner": {"enabled": False, "command": ""},
+        "tests": {"enabled": False, "command": ""},
     },
 }
 
@@ -50,14 +48,21 @@ def load_config() -> dict[str, Any]:
     if CONFIG_FILE.exists():
         with open(CONFIG_FILE, "rb") as f:
             return tomllib.load(f)
-    return DEFAULT_CONFIG.copy()
+    return copy.deepcopy(DEFAULT_CONFIG)
+
+
+def _strip_none(obj: Any) -> Any:
+    """Recursively replace None values with empty strings (TOML has no null)."""
+    if isinstance(obj, dict):
+        return {k: _strip_none(v) for k, v in obj.items()}
+    return "" if obj is None else obj
 
 
 def save_config(cfg: dict[str, Any]) -> Path:
     """Write config to disk."""
     ensure_config_dir()
     with open(CONFIG_FILE, "wb") as f:
-        tomli_w.dump(cfg, f)
+        tomli_w.dump(_strip_none(cfg), f)
     return CONFIG_FILE
 
 
