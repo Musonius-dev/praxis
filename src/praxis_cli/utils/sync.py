@@ -145,7 +145,10 @@ def sync_openai_codex(root: Path) -> list[str]:
         agents_md += f'- "{trigger}" → {path}\n'
     agents_md += "\n## Global Rules\n"
     agents_md += "- Never write code without an approved spec and plan.\n"
-    agents_md += "- Stop at phase checkpoints for human review.\n"
+    if cfg.get("defaults", {}).get("phase_gate", True):
+        agents_md += "- Stop at phase checkpoints for human review.\n"
+    else:
+        agents_md += "- Phase checkpoints are informational — continue unless the user stops you.\n"
     agents_md += "- Run verify at every checkpoint and before PRs.\n"
     agents_md += "- Read praxis/context/ before starting any task.\n"
     for rule in rules:

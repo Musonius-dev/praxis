@@ -3,13 +3,13 @@
 import click
 from rich.console import Console
 
-from praxis_cli.commands.init import init
+from praxis_cli.commands.bootstrap import bootstrap
 from praxis_cli.commands.config import config
 from praxis_cli.commands.doctor import doctor
-from praxis_cli.commands.bootstrap import bootstrap
+from praxis_cli.commands.init import init
+from praxis_cli.commands.setup import setup
 from praxis_cli.commands.status import status
 from praxis_cli.commands.verify import verify
-from praxis_cli.commands.setup import setup
 
 console = Console()
 

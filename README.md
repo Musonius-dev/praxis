@@ -46,6 +46,7 @@ Then open your AI tool and run:
 | `praxis init` | Scaffold PRAXIS.md, commands, verification config, and tool-specific files |
 | `praxis config` | Set global preferences, sync to ~/.claude/CLAUDE.md |
 | `praxis doctor` | Validate project setup, tool sync, and verification tools |
+| `praxis setup` | Generate and refresh project context files under `praxis/context/` |
 | `praxis bootstrap` | Regenerate tool-specific files after updating PRAXIS.md |
 | `praxis status` | Show all tracks with Rich-formatted progress tables |
 | `praxis verify` | Run verification checks (formatter, linter, type checker, security, tests) |
