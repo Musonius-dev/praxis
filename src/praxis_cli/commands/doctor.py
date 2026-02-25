@@ -119,12 +119,6 @@ def doctor():
         _print_check("CLAUDE.md", claude_md)
         _print_check(".claude/commands/", claude_cmds)
 
-    # Gemini CLI
-    if cfg.get("tools", {}).get("gemini_cli", True):
-        gemini_md = (root / "GEMINI.md").exists()
-        checks.append(("GEMINI.md", gemini_md, "Run: praxis bootstrap"))
-        _print_check("GEMINI.md", gemini_md)
-
     # OpenAI Codex
     if cfg.get("tools", {}).get("openai_codex", True):
         agents_md = (root / "AGENTS.md").exists()
