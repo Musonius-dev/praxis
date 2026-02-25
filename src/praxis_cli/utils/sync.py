@@ -1,13 +1,56 @@
 """Sync PRAXIS config to tool-specific instruction files."""
 
+import json
 import shutil
 from pathlib import Path
 
 from praxis_cli.utils.config import load_config
 
 
+def _build_claude_hooks(cfg: dict) -> dict:
+    """Build Claude Code hooks from PRAXIS verification config.
+
+    Maps enabled verification tools to PostToolUse hooks that fire
+    after Claude Code edits or writes files. Tests are excluded
+    (too slow for per-edit; use `praxis verify` instead).
+
+    Returns a dict suitable for merging into .claude/settings.json,
+    or an empty dict if no checks are enabled.
+    """
+    verification = cfg.get("verification", {})
+    hooks = []
+
+    for name in ("formatter", "linter", "type_checker", "security_scanner"):
+        check = verification.get(name, {})
+        if not isinstance(check, dict):
+            continue
+        if not check.get("enabled") or not check.get("command"):
+            continue
+
+        tool = check.get("tool", name)
+        hooks.append({
+            "type": "command",
+            "command": check["command"],
+            "timeout": 30,
+        })
+
+    if not hooks:
+        return {}
+
+    return {
+        "hooks": {
+            "PostToolUse": [
+                {
+                    "matcher": "Edit|Write",
+                    "hooks": hooks,
+                }
+            ]
+        }
+    }
+
+
 def sync_claude_code(root: Path) -> list[str]:
-    """Generate CLAUDE.md and .claude/commands/ for Claude Code."""
+    """Generate CLAUDE.md, .claude/commands/, and .claude/settings.json for Claude Code."""
     generated = []
     cfg = load_config()
 
@@ -33,11 +76,26 @@ def sync_claude_code(root: Path) -> list[str]:
         claude_md += f"- {cmd}\n"
     claude_md += "\n## Global Rules\n"
     claude_md += "- Never write code without an approved spec and plan.\n"
-    claude_md += "- Stop at phase checkpoints for human review.\n"
+    if cfg.get("defaults", {}).get("phase_gate", True):
+        claude_md += "- Stop at phase checkpoints for human review.\n"
+    else:
+        claude_md += "- Phase checkpoints are informational — continue unless the user stops you.\n"
     claude_md += "- Run verify at every checkpoint and before PRs.\n"
     claude_md += "- Read praxis/context/ before starting any task.\n"
     for rule in rules:
         claude_md += f"{rule}\n"
+
+    # Verification hooks note
+    verification = cfg.get("verification", {})
+    any_hooks = any(
+        isinstance(v, dict) and v.get("enabled")
+        for v in verification.values()
+    )
+    if any_hooks:
+        claude_md += "\n## Verification Hooks\n"
+        claude_md += "Post-edit hooks are configured in .claude/settings.json.\n"
+        claude_md += "They run automatically after you edit/write files: format, lint, type check, security scan.\n"
+        claude_md += "Run `praxis verify --full` for comprehensive checks including tests.\n"
 
     (root / "CLAUDE.md").write_text(claude_md)
     generated.append("CLAUDE.md")
@@ -50,6 +108,25 @@ def sync_claude_code(root: Path) -> list[str]:
         for cmd_file in commands_src.glob("*.md"):
             shutil.copy2(cmd_file, commands_dst / cmd_file.name)
         generated.append(".claude/commands/")
+
+    # .claude/settings.json (hooks from verification config)
+    hooks_config = _build_claude_hooks(cfg)
+    if hooks_config:
+        settings_dir = root / ".claude"
+        settings_dir.mkdir(parents=True, exist_ok=True)
+        settings_path = settings_dir / "settings.json"
+
+        # Merge with existing settings to preserve user customizations
+        existing = {}
+        if settings_path.exists():
+            try:
+                existing = json.loads(settings_path.read_text())
+            except (json.JSONDecodeError, OSError):
+                existing = {}
+
+        existing["hooks"] = hooks_config["hooks"]
+        settings_path.write_text(json.dumps(existing, indent=2) + "\n")
+        generated.append(".claude/settings.json")
 
     return generated
 

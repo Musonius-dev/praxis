@@ -19,6 +19,11 @@ dependencies = [
     "tomli-w>=1.0",
 ]
 
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0",
+]
+
 [project.scripts]
 praxis = "praxis_cli.cli:cli"
 
@@ -27,3 +32,6 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 praxis_cli = ["templates/**/*.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

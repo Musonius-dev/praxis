@@ -24,7 +24,6 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "openai_codex": True,
     },
     "defaults": {
-        "track_types": ["code", "architecture", "federal", "content"],
         "verification_mode": "quick",
         "phase_gate": True,
     },

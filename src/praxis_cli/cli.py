@@ -8,6 +8,7 @@ from praxis_cli.commands.config import config
 from praxis_cli.commands.doctor import doctor
 from praxis_cli.commands.bootstrap import bootstrap
 from praxis_cli.commands.status import status
+from praxis_cli.commands.verify import verify
 from praxis_cli.commands.workspace import workspace
 
 console = Console()
@@ -29,6 +30,7 @@ cli.add_command(config)
 cli.add_command(doctor)
 cli.add_command(bootstrap)
 cli.add_command(status)
+cli.add_command(verify)
 cli.add_command(workspace)
 
 

@@ -149,6 +149,47 @@ def _interactive_config():
 
     console.print()
 
+    # Verification tools
+    console.print("[bold]Verification Tools[/bold]")
+    console.print("[dim]Configure checks that run after AI edits (Claude Code hooks) and via 'praxis verify'.[/dim]")
+    console.print()
+
+    if "verification" not in cfg:
+        cfg["verification"] = {}
+
+    for check_name, check_label, examples in [
+        ("formatter", "Formatter", "prettier, black, gofmt"),
+        ("linter", "Linter", "eslint, ruff, clippy"),
+        ("type_checker", "Type checker", "tsc, mypy, pyright"),
+        ("security_scanner", "Security scanner", "trivy, bandit, npm audit"),
+        ("tests", "Test runner", "jest, pytest, go test"),
+    ]:
+        current = cfg["verification"].get(check_name, {})
+        if not isinstance(current, dict):
+            current = {}
+        enabled = click.confirm(
+            f"  Enable {check_label}?",
+            default=current.get("enabled", False),
+        )
+        if enabled:
+            tool = click.prompt(
+                f"    Tool ({examples})",
+                default=current.get("tool") or "",
+            )
+            command = click.prompt(
+                f"    Command to run",
+                default=current.get("command") or "",
+            )
+            cfg["verification"][check_name] = {
+                "enabled": True,
+                "tool": tool,
+                "command": command,
+            }
+        else:
+            cfg["verification"][check_name] = {"enabled": False}
+
+    console.print()
+
     # Save
     save_config(cfg)
     console.print(f"[green]✅ Config saved to {CONFIG_FILE}[/green]")

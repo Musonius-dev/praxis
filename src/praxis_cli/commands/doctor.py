@@ -1,5 +1,6 @@
 """praxis doctor — validate PRAXIS setup across project and global config."""
 
+import json
 import shutil
 from pathlib import Path
 
@@ -119,6 +120,24 @@ def doctor():
         _print_check("CLAUDE.md", claude_md)
         _print_check(".claude/commands/", claude_cmds)
 
+        # Check for hooks if verification tools are configured
+        verification_cfg = cfg.get("verification", {})
+        any_enabled = any(
+            isinstance(v, dict) and v.get("enabled")
+            for v in verification_cfg.values()
+        )
+        if any_enabled:
+            settings_path = root / ".claude" / "settings.json"
+            has_hooks = False
+            if settings_path.exists():
+                try:
+                    settings_data = json.loads(settings_path.read_text())
+                    has_hooks = bool(settings_data.get("hooks", {}).get("PostToolUse"))
+                except (json.JSONDecodeError, OSError):
+                    pass
+            checks.append((".claude/settings.json (hooks)", has_hooks, "Run: praxis bootstrap"))
+            _print_check(".claude/settings.json (hooks)", has_hooks)
+
     # OpenAI Codex
     if cfg.get("tools", {}).get("openai_codex", True):
         agents_md = (root / "AGENTS.md").exists()
@@ -135,20 +154,25 @@ def doctor():
     # ── Verification tools ─────────────────────────
     console.print("[bold]Verification Tools[/bold]")
 
-    common_tools = {
-        "prettier": "Formatter",
-        "black": "Formatter",
-        "eslint": "Linter",
-        "ruff": "Linter",
-        "mypy": "Type checker",
-        "trivy": "Security scanner",
-        "bandit": "Security scanner",
-        "gh": "GitHub CLI (for PRs)",
-    }
+    verification_cfg = cfg.get("verification", {})
+    any_configured = False
+    for name, check in verification_cfg.items():
+        if not isinstance(check, dict) or not check.get("enabled"):
+            continue
+        any_configured = True
+        command = check.get("command", "")
+        tool_bin = command.split()[0] if command else ""
+        found = shutil.which(tool_bin) is not None if tool_bin else False
+        label = f"{check.get('tool', name)} ({command})"
+        checks.append((label, found, f"Install {tool_bin} or update config"))
+        _print_check(label, found)
 
-    for tool, desc in common_tools.items():
-        found = shutil.which(tool) is not None
-        _print_check(f"{tool} ({desc})", found, required=False)
+    if not any_configured:
+        _print_check("Verification tools configured", False, "Run: praxis config", required=False)
+
+    # Always check for gh CLI
+    gh_found = shutil.which("gh") is not None
+    _print_check("gh (GitHub CLI)", gh_found, required=False)
 
     console.print()
 
