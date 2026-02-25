@@ -120,3 +120,43 @@ def test_single_check_mode(mock_config, mock_is_praxis, mock_root, tmp_path):
     assert "Linter" in result.output
     # Formatter should NOT appear when using --check linter
     assert "Formatter" not in result.output
+
+
+@patch("praxis_cli.commands.verify.find_project_root")
+@patch("praxis_cli.commands.verify.is_praxis_project")
+@patch("praxis_cli.commands.verify.load_config")
+def test_single_check_missing_from_config_skips(mock_config, mock_is_praxis, mock_root, tmp_path):
+    """--check with a known check absent from config should SKIP, not error."""
+    mock_root.return_value = tmp_path
+    mock_is_praxis.return_value = True
+
+    # Config has no "tests" entry at all
+    mock_config.return_value = {
+        "defaults": {"verification_mode": "quick"},
+        "verification": {},
+    }
+
+    runner = CliRunner()
+    result = runner.invoke(verify, ["--check", "tests"])
+    assert result.exit_code == 0
+    assert "Tests" in result.output
+    assert "SKIP" in result.output
+
+
+@patch("praxis_cli.commands.verify.find_project_root")
+@patch("praxis_cli.commands.verify.is_praxis_project")
+@patch("praxis_cli.commands.verify.load_config")
+def test_single_check_unknown_name_errors(mock_config, mock_is_praxis, mock_root, tmp_path):
+    """--check with an unrecognised check name should exit non-zero."""
+    mock_root.return_value = tmp_path
+    mock_is_praxis.return_value = True
+
+    mock_config.return_value = {
+        "defaults": {"verification_mode": "quick"},
+        "verification": {},
+    }
+
+    runner = CliRunner()
+    result = runner.invoke(verify, ["--check", "nonexistent"])
+    assert result.exit_code == 1
+    assert "Unknown check" in result.output
