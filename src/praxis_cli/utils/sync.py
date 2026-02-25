@@ -27,7 +27,6 @@ def _build_claude_hooks(cfg: dict) -> dict:
         if not check.get("enabled") or not check.get("command"):
             continue
 
-        tool = check.get("tool", name)
         hooks.append({
             "type": "command",
             "command": check["command"],
