@@ -96,9 +96,9 @@ def init(force: bool, skip_bootstrap: bool):
         Panel(
             "[bold green]✅ PRAXIS initialized.[/bold green]\n\n"
             "Next steps:\n"
-            "  1. Run [bold]praxis config[/bold] to set global preferences\n"
-            "  2. Run [bold]praxis doctor[/bold] to validate setup\n"
-            "  3. Open your AI tool and run [bold]setup[/bold] to configure project context",
+            "  [bold]praxis setup[/bold]   Full guided walkthrough (recommended for first time)\n"
+            "  [bold]praxis config[/bold]  Set global preferences\n"
+            "  [bold]praxis doctor[/bold]  Validate setup\n",
             title="Done",
             style="green",
         )
