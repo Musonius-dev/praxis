@@ -86,6 +86,17 @@ Use `/kit:off` to deactivate the current kit.
 
 ---
 
+## MCP Servers
+
+| Server | Purpose | Registered by |
+|--------|---------|---------------|
+| `perplexity` | Deep research — current docs, best practices, troubleshooting | `install.sh` |
+| `21st-magic` | UI component generation (web-designer kit only) | `kits/web-designer/install.sh` |
+
+See `rules/deep-research.md` for when and how to use Perplexity.
+
+---
+
 ## Configuration
 
 Machine-specific config lives at `~/.claude/praxis.config.json` (not in repo).

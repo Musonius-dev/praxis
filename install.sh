@@ -62,6 +62,28 @@ EOF
   echo "  ✓ Wrote ${CONFIG_FILE}"
 fi
 
+# ── MCP Servers ────────────────────────────────────────────────────
+
+echo "Registering MCP servers …"
+
+# Perplexity deep research — requires PERPLEXITY_API_KEY env var
+if command -v claude &>/dev/null; then
+  if [ -n "${PERPLEXITY_API_KEY:-}" ]; then
+    claude mcp add perplexity --scope user -- npx -yq @perplexity-ai/mcp-server
+    echo "  ✓ perplexity MCP registered (using PERPLEXITY_API_KEY from env)"
+  else
+    read -rp "Perplexity API key (leave empty to skip): " pplx_key
+    if [ -n "$pplx_key" ]; then
+      claude mcp add perplexity --scope user -e PERPLEXITY_API_KEY="$pplx_key" -- npx -yq @perplexity-ai/mcp-server
+      echo "  ✓ perplexity MCP registered"
+    else
+      echo "  ⊘ perplexity MCP skipped (no API key)"
+    fi
+  fi
+else
+  echo "  ⚠ 'claude' CLI not found — skip MCP registration. Install Claude Code first."
+fi
+
 echo ""
 echo "=== Done ==="
 echo "Run 'source ~/.bashrc' or restart your shell."

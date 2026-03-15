@@ -90,6 +90,16 @@ bash ~/praxis/scripts/update.sh
 bash ~/praxis/uninstall.sh
 ```
 
+## Security
+
+This repo is safe for public use. All secrets stay local:
+
+- **API keys** — Stored in `~/.claude.json` by `claude mcp add`, never in repo files
+- **Vault path** — Written to `~/.claude/praxis.config.json`, which is gitignored
+- **`.env` files** — Gitignored by default
+
+**Never commit** API keys, vault paths, or credentials to this repo.
+
 ## License
 
 MIT
