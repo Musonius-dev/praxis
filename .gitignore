@@ -12,8 +12,9 @@ Thumbs.db
 *.swo
 *~
 
-# Node (for MCP dependencies)
+# Node
 node_modules/
+package-lock.json
 
 # Python (if any scripts use it)
 __pycache__/

@@ -1,0 +1,29 @@
+{
+  "name": "praxis-harness",
+  "version": "1.0.0",
+  "description": "Layered Claude Code harness — rules, commands, skills, kits",
+  "bin": {
+    "praxis-harness": "./bin/cli.js"
+  },
+  "files": [
+    "bin/",
+    "base/",
+    "kits/",
+    "templates/",
+    "docs/"
+  ],
+  "keywords": [
+    "claude-code",
+    "ai-harness",
+    "claude",
+    "mcp"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arcanesme/praxis.git"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

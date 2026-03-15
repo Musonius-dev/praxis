@@ -6,13 +6,26 @@ A layered harness for Claude Code that turns AI-assisted development into compou
 
 ## Install
 
+### Quick (recommended)
+
 ```bash
-git clone https://github.com/arcanesme/praxis.git ~/praxis
-cd ~/praxis
-bash install.sh
+npx praxis-harness install --vault ~/Documents/Obsidian
 ```
 
-This symlinks the base layer into `~/.claude/` and prompts for your Obsidian vault path.
+### With Perplexity deep research
+
+```bash
+PERPLEXITY_API_KEY=pplx-xxx npx praxis-harness install --vault ~/Documents/Obsidian
+```
+
+### Bash alternative (no Node.js required)
+
+```bash
+git clone https://github.com/arcanesme/praxis.git ~/praxis
+bash ~/praxis/install.sh --vault ~/Documents/Obsidian
+```
+
+This copies the harness into `~/.praxis/` and symlinks the base layer into `~/.claude/`.
 
 ## Architecture
 
@@ -75,19 +88,24 @@ kits/
 
 templates/               Reusable templates for projects + vault
 docs/                    Architecture + kit creation guide
-scripts/                 Update script
 ```
 
 ## Update
 
 ```bash
-bash ~/praxis/scripts/update.sh
+npx praxis-harness@latest update
 ```
 
 ## Uninstall
 
 ```bash
-bash ~/praxis/uninstall.sh
+npx praxis-harness uninstall
+```
+
+## Status
+
+```bash
+npx praxis-harness status
 ```
 
 ## Security

@@ -40,17 +40,33 @@ Per-repository `.claude/rules/*.md` files with path-scoped frontmatter. Created 
 
 ## Installation
 
+### npx (recommended)
+
 ```bash
-git clone https://github.com/arcanesme/praxis.git
-cd praxis
-bash install.sh
+npx praxis-harness install --vault ~/Documents/Obsidian
 ```
 
-This creates symlinks:
-- `~/.claude/CLAUDE.md` → `base/CLAUDE.md`
-- `~/.claude/rules/` → `base/rules/`
-- `~/.claude/commands/` → `base/commands/`
-- `~/.claude/skills/` → `base/skills/`
+This copies the harness content to `~/.praxis/` and creates symlinks in `~/.claude/`:
+
+- `~/.claude/CLAUDE.md` → `~/.praxis/base/CLAUDE.md`
+- `~/.claude/rules/` → `~/.praxis/base/rules/`
+- `~/.claude/commands/` → `~/.praxis/base/commands/`
+- `~/.claude/skills/` → `~/.praxis/base/skills/`
+
+### Bash alternative
+
+```bash
+git clone https://github.com/arcanesme/praxis.git ~/praxis
+bash ~/praxis/install.sh --vault ~/Documents/Obsidian
+```
+
+Symlinks directly from the repo clone (no `~/.praxis/` intermediate).
+
+### Update
+
+```bash
+npx praxis-harness@latest update
+```
 
 ## Configuration
 

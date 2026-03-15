@@ -5,7 +5,32 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CLAUDE_DIR="${HOME}/.claude"
 CONFIG_FILE="${CLAUDE_DIR}/praxis.config.json"
 
-echo "=== Praxis Installer ==="
+# ── Flag parsing ─────────────────────────────────────────────────────────
+
+VAULT_PATH="${PRAXIS_VAULT_PATH:-}"
+PPLX_KEY="${PERPLEXITY_API_KEY:-}"
+NO_MCP=false
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --vault)       VAULT_PATH="$2"; shift 2 ;;
+    --perplexity-key) PPLX_KEY="$2"; shift 2 ;;
+    --no-mcp)      NO_MCP=true; shift ;;
+    --help|-h)
+      echo "Usage: bash install.sh [options]"
+      echo ""
+      echo "Options:"
+      echo "  --vault <path>            Obsidian vault path (or PRAXIS_VAULT_PATH env var)"
+      echo "  --perplexity-key <key>    Perplexity API key (or PERPLEXITY_API_KEY env var)"
+      echo "  --no-mcp                  Skip MCP server registration"
+      echo "  --help, -h                Show this help"
+      exit 0
+      ;;
+    *) echo "Unknown option: $1"; exit 1 ;;
+  esac
+done
+
+echo "=== Praxis Installer (bash) ==="
 echo ""
 
 # Ensure ~/.claude exists
@@ -40,51 +65,68 @@ echo ""
 
 # ── Obsidian vault path ──────────────────────────────────────────────
 
-if [ -f "$CONFIG_FILE" ]; then
+if [ -f "$CONFIG_FILE" ] && [ -z "$VAULT_PATH" ]; then
   echo "Config already exists: ${CONFIG_FILE}"
-  echo "  To reconfigure, delete it and re-run install.sh"
-else
-  read -rp "Obsidian vault path (e.g. ~/Documents/Obsidian): " vault_input
-
+  echo "  To reconfigure, pass --vault or delete the file and re-run."
+elif [ -n "$VAULT_PATH" ]; then
   # Expand ~ manually
-  vault_path="${vault_input/#\~/$HOME}"
+  VAULT_PATH="${VAULT_PATH/#\~/$HOME}"
 
-  if [ ! -d "$vault_path" ]; then
-    echo "  ⚠ Directory does not exist: ${vault_path}"
+  if [ ! -d "$VAULT_PATH" ]; then
+    echo "  ⚠ Directory does not exist: ${VAULT_PATH}"
     echo "  Writing config anyway — create the directory before using vault features."
   fi
 
   cat > "$CONFIG_FILE" <<EOF
 {
-  "vault_path": "${vault_path}"
+  "vault_path": "${VAULT_PATH}"
 }
 EOF
   echo "  ✓ Wrote ${CONFIG_FILE}"
+elif [ -t 0 ]; then
+  # Interactive TTY — prompt for vault path
+  read -rp "Obsidian vault path (e.g. ~/Documents/Obsidian, or press Enter to skip): " vault_input
+  if [ -n "$vault_input" ]; then
+    vault_input="${vault_input/#\~/$HOME}"
+    if [ ! -d "$vault_input" ]; then
+      echo "  ⚠ Directory does not exist: ${vault_input}"
+      echo "  Writing config anyway — create the directory before using vault features."
+    fi
+    cat > "$CONFIG_FILE" <<EOF
+{
+  "vault_path": "${vault_input}"
+}
+EOF
+    echo "  ✓ Wrote ${CONFIG_FILE}"
+  else
+    echo "  ⊘ Vault path skipped (use --vault to set later)"
+  fi
+else
+  echo "  ⊘ No vault path configured (use --vault to set)"
 fi
+echo ""
 
 # ── MCP Servers ────────────────────────────────────────────────────
 
-echo "Registering MCP servers …"
+if [ "$NO_MCP" = false ]; then
+  echo "MCP servers …"
 
-# Perplexity deep research — requires PERPLEXITY_API_KEY env var
-if command -v claude &>/dev/null; then
-  if [ -n "${PERPLEXITY_API_KEY:-}" ]; then
-    claude mcp add perplexity --scope user -- npx -yq @perplexity-ai/mcp-server
-    echo "  ✓ perplexity MCP registered (using PERPLEXITY_API_KEY from env)"
-  else
-    read -rp "Perplexity API key (leave empty to skip): " pplx_key
-    if [ -n "$pplx_key" ]; then
-      claude mcp add perplexity --scope user -e PERPLEXITY_API_KEY="$pplx_key" -- npx -yq @perplexity-ai/mcp-server
-      echo "  ✓ perplexity MCP registered"
+  if command -v claude &>/dev/null; then
+    if [ -n "$PPLX_KEY" ]; then
+      if claude mcp add perplexity --scope user -e PERPLEXITY_API_KEY="$PPLX_KEY" -- npx -yq @perplexity-ai/mcp-server 2>/dev/null; then
+        echo "  ✓ Registered MCP: perplexity"
+      else
+        echo "  ⚠ MCP registration failed: perplexity"
+        echo "    Register manually: claude mcp add perplexity --scope user -e PERPLEXITY_API_KEY=\"your-key\" -- npx -yq @perplexity-ai/mcp-server"
+      fi
     else
-      echo "  ⊘ perplexity MCP skipped (no API key)"
+      echo "  ⊘ Skipped MCP: perplexity (no API key — use --perplexity-key or PERPLEXITY_API_KEY)"
     fi
+  else
+    echo "  ⚠ 'claude' CLI not found — skipped MCP registration. Install Claude Code first."
   fi
-else
-  echo "  ⚠ 'claude' CLI not found — skip MCP registration. Install Claude Code first."
+  echo ""
 fi
 
-echo ""
 echo "=== Done ==="
-echo "Run 'source ~/.bashrc' or restart your shell."
 echo "To activate a kit: /kit:web-designer"
