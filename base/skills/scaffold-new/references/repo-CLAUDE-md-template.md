@@ -67,3 +67,4 @@ When compacting, always preserve:
 - Current milestone
 - Last 3 decisions and rationale
 - Any STOP conditions or blockers
+- Ralph state (if active): current story, completed stories

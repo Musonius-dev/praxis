@@ -62,6 +62,21 @@ debugging methodology directly.
 **Ralph is the outer loop.** Spawns fresh instances. GSD + Superpowers
 operate within each iteration.
 
+## Context Rot Prevention
+
+GSD and Ralph address context rot at different scales:
+
+| Scale | Tool | Mechanism |
+|-------|------|-----------|
+| Intra-session | GSD | Phase-scoped context loading; file-based handoff at phase boundaries |
+| Inter-session | Ralph | Fresh instance per story; `claude-progress.json` as sole state bridge |
+
+When context degradation is detected (repeated corrections, instruction drift),
+use `/context-reset` to checkpoint state and restart clean.
+
+Story sizing rule: each Ralph story must fit one context window (~10k output tokens).
+Stories requiring cross-story reasoning stay in GSD.
+
 ## AI-Kit Pattern
 
 A kit is a self-contained domain tooling bundle:
