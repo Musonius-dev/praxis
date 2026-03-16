@@ -73,6 +73,11 @@ source: agent | human | meeting
 
 Use `[[wikilinks]]` for all internal vault references — never relative paths.
 
+### Bootstrap templates
+If `status.md`, `tasks.md`, or `_index.md` are missing from a project vault directory,
+scaffold them from `templates/` in the praxis repo. Run `/scaffold-exist` if the
+project predates the scaffold standard. Never create these files freehand — use templates.
+
 ### Planning workflow
 When "let's work on X" or "plan out Y":
 1. Run `/plan` to create a dated plan in `vault/plans/`

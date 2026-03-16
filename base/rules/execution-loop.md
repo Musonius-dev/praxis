@@ -12,6 +12,15 @@ Answer four questions before any code or file is written:
 - **NON-GOALS**: What this task explicitly does NOT include
 If ambiguous: ask 2–3 clarifying questions before proceeding.
 
+### Risk Check (MANDATORY if any apply)
+Run `/risk` before proceeding to PLAN if the task:
+- Touches infrastructure files (`*.tf`, `*.bicep`, `*.yml` in `.github/workflows/`)
+- Touches authentication, credentials, or secrets handling
+- Modifies >3 files across different domains
+- Has a NON-GOALS list that explicitly defers something risky
+
+If any condition is met: `/risk` must produce at minimum one risk entry before `/gsd:plan-phase`.
+
 ### Phase 2: PLAN
 - Break work into milestones small enough to complete and verify in one pass.
 - Each milestone MUST have: description, acceptance criteria, validation command.
@@ -70,7 +79,6 @@ After ALL milestones, before reporting done:
 4. If reviewer found >3 issues: run review again (max 3 rounds).
 
 ## Context Management
+See `~/.claude/rules/context-management.md` for complete context discipline:
+GSD phase scoping, Ralph story sizing, context reset protocol.
 - Use subagents (Task tool) for exploration, research, and review.
-- One feature per session. Do not mix unrelated tasks.
-- After 2 failed corrections: suggest /clear and fresh start with better prompt.
-- When compacting: preserve active plan path, current milestone, last 3 decisions, any STOP conditions.
