@@ -6,7 +6,11 @@
     "praxis-harness": "./bin/praxis.js"
   },
   "files": [
-    "bin/"
+    "bin/",
+    "base/",
+    "kits/",
+    "templates/",
+    "scripts/"
   ],
   "scripts": {
     "test": "node --check bin/praxis.js"
