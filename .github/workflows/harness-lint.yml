@@ -14,5 +14,7 @@ jobs:
           for f in scripts/*.sh install.sh uninstall.sh; do
             [ -f "$f" ] && bash -n "$f" && echo "✓ $f" || echo "✗ $f"
           done
+      - name: JS syntax check
+        run: node --check bin/praxis.js
       - name: Run harness lint
         run: bash scripts/lint-harness.sh .
