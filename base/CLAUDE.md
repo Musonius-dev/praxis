@@ -92,6 +92,7 @@ Kits activate via `/kit:<n>` slash command. Kits are idempotent — double-activ
 | Kit | Activate | Domain |
 |-----|----------|--------|
 | web-designer | `/kit:web-designer` | Design system → components → accessibility → production lint |
+| infrastructure | `/kit:infrastructure` | Terraform → Azure → GitHub Actions → compliance |
 
 Kit manifests live in `~/.claude/kits/<name>/KIT.md`.
 
