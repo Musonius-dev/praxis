@@ -36,7 +36,8 @@ Why this work is happening now.
 
 ## Milestones
 - [ ] {milestone 1} — {date}
-- [ ] {milestone 2} — {date}
+- [ ] {milestone 2} — {date} | depends_on: milestone 1
+- [ ] {milestone 3} — {date} | depends_on: milestone 1, milestone 2
 
 ## Steps
 ### {Milestone 1}
@@ -52,6 +53,14 @@ Why this work is happening now.
 ## Session Log
 <!-- Updated by session-retro -->
 ```
+
+**Step 3b — Dependency validation**
+After building the milestone list:
+- Scan for circular dependencies (topological sort). If cycle detected:
+  report the cycle and ask user to break it.
+- Validate that every `depends_on:` reference exists in the milestone list.
+- If user provided milestones out of order: reorder and note the change.
+- Milestones with no `depends_on:` are independent — this is valid.
 
 **Step 4 — Write and wire**
 - Write to: `{vault_path}/plans/{YYYY-MM-DD}_{kebab-title}.md`
