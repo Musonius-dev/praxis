@@ -20,11 +20,16 @@ Load ONLY rules relevant to files being touched in this milestone:
 
 Do NOT load all rules. Context is scarce — spend it on implementation, not instructions.
 
-**Step 2b — Declare file group**
+**Step 2b — Declare file group and load boundaries**
 Before implementing the current milestone, declare the file group:
 - Format: `Milestone: {name} | Files: {list, max 5} | Off-limits: everything else`
 - Write the file-group declaration to the plan file under the milestone entry.
 - File groups can include globs (e.g., `src/components/*.tsx`).
+- Read `## Boundaries` from the active plan. Boundary items are absolute off-limits —
+  they override file-group declarations. If a milestone file group includes a
+  boundary-protected file: STOP. Surface the conflict before proceeding.
+- If current milestone has `checkpoint: decision` or `checkpoint: human-verify`:
+  present the decision/output to user before proceeding. Do not auto-advance.
 
 **Step 3 — Implement current milestone**
 - One milestone at a time. Keep diffs scoped.
@@ -38,13 +43,16 @@ Before implementing the current milestone, declare the file group:
 **Step 4 — Milestone completion**
 When the milestone is complete:
 1. Write a brief summary to the active plan file under the milestone entry
-2. Confirm actual diff matches declared file group before prompting `/gsd:verify`.
-3. Prompt: "Milestone complete. Run `/gsd:verify` to validate."
+2. Confirm actual diff matches declared file group
+3. Output ONE recommendation — no menu, no alternatives:
+   `Next: /gsd:verify` followed by one sentence explaining why
+   Example: "Next: /gsd:verify — 3 files changed in declared group, tests and lint needed"
 
 **Step 5 — Ralph handoff trigger**
 If remaining milestones >5 and all are independent (no cross-milestone reasoning):
-- Suggest: "Remaining milestones are independent — consider Ralph for unattended execution."
-- Do not auto-switch. User decides.
+- After `/gsd:verify` passes (not during Step 4), append:
+  "Also consider: /ralph — {n} independent milestones remaining"
+- Never surface Ralph before verify completes.
 
 **Rules:**
 - Never skip a milestone or reorder without approval.
