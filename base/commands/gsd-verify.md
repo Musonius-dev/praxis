@@ -10,6 +10,7 @@ Execute in order, showing actual output (never assertions):
 2. **Linter** → run the project lint command → show output, fix ALL warnings
 3. **Typecheck** (if applicable) → show output
 4. **Build** (if applicable) → show output
+5. **Functional check** — ask: "Is there a smoke test, `terraform plan` output, or browser check needed for this milestone?" If yes: block until user confirms it passed. If no: proceed.
 
 Read test/lint/build commands from the project CLAUDE.md `## Commands` section.
 If no commands are defined: warn and ask user for the correct commands.
