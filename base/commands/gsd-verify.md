@@ -30,6 +30,39 @@ If no commands are defined: warn and ask user for the correct commands.
    - Subagent receives ONLY: the diff, the SPEC, relevant rules files
    - Address all Critical and Major findings before reporting done
 
+**Step 3b — UNIFY (mandatory after all milestones verified)**
+After self-review passes, write phase summary:
+- Write `{vault_path}/plans/current-phase-summary.md`:
+  ```markdown
+  ---
+  tags: [unify, {project-slug}]
+  date: {YYYY-MM-DD}
+  source: agent
+  ---
+  # Phase Summary: {plan title}
+
+  ## Planned vs Actual
+  - Original milestones: {list from plan}
+  - Completed: {list with dates}
+  - Changed or dropped: {list with reasons}
+
+  ## Decisions Made
+  - {decision}: {rationale}
+
+  ## Acceptance Criteria
+  | Criterion | Status |
+  |-----------|--------|
+  | {from Done When} | PASS / FAIL |
+
+  ## Deferred Items
+  - {item}: {reason deferred, suggested next step}
+  ```
+- Run `unset BUN_INSTALL && qmd update`
+- Report: "Phase summary written. Run `/session-retro` for learnings."
+
+**Rules:**
+- UNIFY fires after ALL milestones verified, not per-milestone. session-retro still runs at session end for learnings — complementary, not redundant.
+
 **Step 4 — On FAIL (Stop-and-Fix)**
 1. Identify the failure: exact error, file, line
 2. Fix NOW. Do not proceed to the next milestone.
