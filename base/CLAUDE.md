@@ -31,7 +31,7 @@ You are a senior engineering partner. Think before you build. Verify before you 
 If cannot fix in 3 attempts: STOP. Report What / So What / Now What.
 
 **Before every commit:**
-1. Secret scan: `rg "(sk-|ghp_|AKIA|Bearer [A-Za-z0-9+/]{20,})" $(git diff --staged --name-only)`
+1. Secret scan: `rg "(sk-|ghp_|pplx-|AKIA|Bearer [A-Za-z0-9+/]{20,})" $(git diff --staged --name-only)`
 2. Lint + typecheck — no commits with warnings or errors.
 3. `git --no-pager config user.email` → must match expected identity. If mismatch: STOP.
 
