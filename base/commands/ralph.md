@@ -19,6 +19,36 @@ You are running Ralph — autonomous multi-story execution.
 - Reject stories that exceed constraints. Report which stories need splitting.
 - Stories requiring cross-story reasoning belong in GSD, not Ralph.
 
+**Step 2b — PRD format (canonical)**
+Ralph PRDs must follow this structure:
+  ```markdown
+  ---
+  title: {PRD title}
+  date: YYYY-MM-DD
+  status: active
+  stories_total: {n}
+  ---
+  # PRD: {title}
+
+  ## Context
+  Why this work exists. 1-3 sentences.
+
+  ## Stories
+
+  ### Story: {story-id}
+  **As a**: {role}
+  **I want**: {capability}
+  **So that**: {outcome}
+  **Done when**:
+  - [ ] {verifiable check}
+  **File group**: {list of files, max 3 groups}
+  **Dependencies**: {story-ids that must complete first, or "none"}
+  **Estimate**: S / M / L
+  ```
+- Size validation: before starting any Ralph run, scan every story.
+  Any story marked L or missing a File group: STOP. Fix the PRD first.
+- S = <3 files. M = 3-5 files. L = 5+ files (must split before Ralph).
+
 **Step 3 — State bridge**
 - `ralph_state` in `claude-progress.json` is the ONLY state between iterations
 - Never reference conversation history as source of truth
@@ -40,6 +70,17 @@ For each story, in a fresh context:
 3. Read PRD → current story ONLY (not full PRD)
 4. Activate kit if specified in project CLAUDE.md (`## Active kit`)
 5. Execute the story using GSD execute + verify phases
+
+**Step 4b — Blocked story protocol**
+When a story cannot complete (test fails after 3 attempts, dependency missing, etc.):
+1. Do NOT retry the story. Ralph stories get one attempt.
+2. Record in `ralph_state.blocked_stories`:
+   ```json
+   { "story": "{story-id}", "reason": "{specific error}", "blocked_at": "{ISO timestamp}" }
+   ```
+3. Write the blocker to the active plan file under the story entry.
+4. Move to the next unblocked story. Never halt the entire Ralph run.
+5. At run end: report all blocked stories as a group for human resolution.
 
 **Step 5 — Iteration end**
 After each story completes:
