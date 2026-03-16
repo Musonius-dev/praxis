@@ -387,6 +387,12 @@ verify "command -v qmd"                              "qmd available"
 echo ""
 echo -e "  Checks: ${BOLD}$PASS/$TOTAL passed${NC}"
 
+if [[ -f "$PRAXIS_DIR/scripts/health-check.sh" ]]; then
+  echo ""
+  step "Running health check..."
+  bash "$PRAXIS_DIR/scripts/health-check.sh" || warn "Health check had failures — review above"
+fi
+
 # ═══════════════════════════════════════════
 # Summary
 # ═══════════════════════════════════════════

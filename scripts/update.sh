@@ -64,5 +64,11 @@ command -v qmd &>/dev/null && echo "  ✓ qmd available" || echo "  ✗ qmd not 
 command -v claude &>/dev/null && echo "  ✓ claude available" || echo "  ✗ claude not found"
 command -v node &>/dev/null && echo "  ✓ node available" || echo "  ✗ node not found"
 
+if [[ -f "$REPO_PATH/scripts/health-check.sh" ]]; then
+  echo ""
+  echo "Running health check..."
+  bash "$REPO_PATH/scripts/health-check.sh" || echo "  ⚠ Health check had failures"
+fi
+
 echo ""
 echo "✓ Praxis updated"
