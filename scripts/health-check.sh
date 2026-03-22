@@ -101,7 +101,7 @@ echo ""
 echo "MCP Servers:"
 if command -v claude &>/dev/null; then
   MCP_LIST=$(claude mcp list 2>/dev/null || true)
-  for server in context7 perplexity github; do
+  for server in context7 github; do
     TOTAL=$((TOTAL + 1))
     if echo "$MCP_LIST" | grep -q "$server"; then
       echo "  ✓ $server registered"

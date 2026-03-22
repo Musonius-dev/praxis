@@ -15,7 +15,7 @@ You are preparing a clean context reset for the current session.
 - Identify: current milestone, last 3 decisions, any STOP conditions or blockers
 
 **Step 3 — Write context checkpoint**
-Write a standalone checkpoint file at `{vault_path}/plans/current-phase-summary.md`:
+Write a standalone checkpoint file at `{vault_path}/plans/{YYYY-MM-DD}-context-checkpoint.md`:
 
 ```markdown
 ---
@@ -58,7 +58,7 @@ Write a session snapshot to `claude-progress.json`:
 Print:
 ```
 Context checkpoint saved to:
-  Checkpoint: {vault_path}/plans/current-phase-summary.md
+  Checkpoint: {vault_path}/plans/{YYYY-MM-DD}-context-checkpoint.md
   Status:     {vault_path}/status.md
   Progress:   {vault_path}/claude-progress.json
 
@@ -67,6 +67,6 @@ Run /clear to reset context, then paste this bootstrap prompt:
   Context reset. Bootstrap:
   1. Read project CLAUDE.md
   2. Read {vault_path}/plans/{current-plan}
-  3. Read {vault_path}/plans/current-phase-summary.md
+  3. Read {vault_path}/plans/{YYYY-MM-DD}-context-checkpoint.md
   4. Resume from milestone: {milestone-name}
 ```

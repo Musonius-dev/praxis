@@ -8,7 +8,7 @@ Praxis manages them via `claude mcp add` (CLI scope, not Desktop config).
 | Server | Package | API Key | Default | Purpose |
 |--------|---------|---------|---------|---------|
 | context7 | `@upstash/context7-mcp` | None | Auto | Live library/API docs |
-| perplexity | `@pplx/mcp-server` | `PERPLEXITY_API_KEY` (pplx-*) | Opt-in | AI web search |
+| perplexity | `@pplx/mcp-server` | `PERPLEXITY_API_KEY` (pplx-*) | Optional (not loaded by default) | AI web search |
 | github | `@modelcontextprotocol/server-github` | `GITHUB_PERSONAL_ACCESS_TOKEN` (ghp_*/github_pat_*) | Opt-in | PRs, issues, code search |
 
 ## Management Commands

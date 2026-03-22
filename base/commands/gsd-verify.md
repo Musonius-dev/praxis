@@ -32,7 +32,7 @@ If no commands are defined: warn and ask user for the correct commands.
 
 **Step 3b — UNIFY (mandatory after all milestones verified)**
 After self-review passes, write phase summary:
-- Write `{vault_path}/plans/current-phase-summary.md`:
+- Write `{vault_path}/plans/{YYYY-MM-DD}_{project-slug}-phase-summary.md`:
   ```markdown
   ---
   tags: [unify, {project-slug}]

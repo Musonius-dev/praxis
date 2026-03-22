@@ -276,6 +276,19 @@ ok "$SKILLS_LINKED skills linked"
 ln -sf "$PRAXIS_DIR/kits" "$CLAUDE_DIR/kits"
 ok "Kits directory linked"
 
+# Hooks
+HOOKS_LINKED=0
+mkdir -p "$CLAUDE_DIR/hooks"
+if [[ -d "$PRAXIS_DIR/base/hooks" ]]; then
+  for hook in "$PRAXIS_DIR"/base/hooks/*.sh; do
+    [[ -f "$hook" ]] || continue
+    fname=$(basename "$hook")
+    ln -sf "$hook" "$CLAUDE_DIR/hooks/$fname"
+    HOOKS_LINKED=$((HOOKS_LINKED + 1))
+  done
+fi
+ok "$HOOKS_LINKED hooks linked"
+
 # Orphan cleanup: obsidian.md renamed to vault.md
 if [[ -e "$CLAUDE_DIR/rules/obsidian.md" ]]; then
   rm -f "$CLAUDE_DIR/rules/obsidian.md"
@@ -464,7 +477,7 @@ echo ""
 echo "  MCP Servers:"
 if command -v claude &>/dev/null; then
   MCP_LIST=$(claude mcp list 2>/dev/null || true)
-  for srv in context7 perplexity github; do
+  for srv in context7 github; do
     if echo "$MCP_LIST" | grep -q "$srv"; then
       ok "$srv MCP registered"
     else

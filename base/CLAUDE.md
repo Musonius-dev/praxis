@@ -83,8 +83,9 @@ Registered via `claude mcp add`. Persist globally across sessions.
 | Server | Purpose | API Key |
 |--------|---------|---------|
 | context7 | Live library/API docs | None |
-| perplexity | AI web search | `PERPLEXITY_API_KEY` |
 | github | Repo operations, PRs, issues | `GITHUB_PERSONAL_ACCESS_TOKEN` |
+
+Optional: `perplexity` (AI web search). Run `bash scripts/onboard-mcp.sh perplexity` to add.
 
 Check: `claude mcp list` | Manage: `bash scripts/onboard-mcp.sh [server|all]`
 Missing servers are non-blocking — features degrade gracefully.
