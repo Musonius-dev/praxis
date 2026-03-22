@@ -143,11 +143,11 @@ if [[ -f "$CONFIG_FILE" ]]; then
   EXISTING_VAULT=$(jq -r '.vault_path // empty' "$CONFIG_FILE" 2>/dev/null)
   EXISTING_BACKEND=$(jq -r '.vault_backend // empty' "$CONFIG_FILE" 2>/dev/null)
   if [[ -n "$EXISTING_VAULT" && -d "$EXISTING_VAULT" ]]; then
-    echo -e "  Existing vault: ${BOLD}$EXISTING_VAULT${NC} (backend: ${EXISTING_BACKEND:-obsidian})"
+    echo -e "  Existing vault: ${BOLD}$EXISTING_VAULT${NC}"
     read -p "  Keep this configuration? [Y/n] " KEEP_VAULT
     if [[ "${KEEP_VAULT:-Y}" =~ ^[Yy]$ ]]; then
       VAULT_PATH="$EXISTING_VAULT"
-      VAULT_BACKEND="${EXISTING_BACKEND:-obsidian}"
+      VAULT_BACKEND="obsidian"
     fi
   fi
 fi
@@ -166,100 +166,44 @@ if [[ -z "$VAULT_PATH" ]]; then
     fi
   fi
 
+  VAULT_BACKEND="obsidian"
+
   if [[ "$OBSIDIAN_DETECTED" == true ]]; then
     echo ""
     echo -e "  ${GREEN}Obsidian detected.${NC}"
-    VAULT_BACKEND="obsidian"
-
-    # Auto-detect vault path
-    DETECTED=""
-    CANDIDATES=(
-      "$HOME/Documents/Obsidian"
-      "$HOME/Obsidian"
-      "$HOME/Documents/Vault"
-    )
-    if [[ "$PLATFORM" == "darwin" ]]; then
-      CANDIDATES+=("$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents")
-    fi
-    for CANDIDATE in "${CANDIDATES[@]}"; do
-      if [[ -d "$CANDIDATE" ]]; then
-        DETECTED="$CANDIDATE"
-        break
-      fi
-    done
-
-    if [[ -n "$DETECTED" ]]; then
-      echo -e "  Detected vault at: ${BOLD}$DETECTED${NC}"
-      read -p "  Use this path? [Y/n] " USE_DETECTED
-      if [[ "${USE_DETECTED:-Y}" =~ ^[Yy]$ ]]; then
-        VAULT_PATH="$DETECTED"
-      fi
-    fi
-
-    if [[ -z "$VAULT_PATH" ]]; then
-      read -p "  Obsidian vault path: " VAULT_PATH
-      VAULT_PATH="${VAULT_PATH/#\~/$HOME}"
-    fi
   else
     echo ""
-    echo "  Obsidian not detected. Choose a vault backend:"
-    echo ""
-    echo "    [1] Plain markdown  — ~/.praxis-vault (no extra tools)"
-    echo "    [2] Logseq          — detect or specify path"
-    echo "    [3] Custom path     — any directory you choose"
-    echo "    [4] Skip            — use ~/.praxis-vault, configure later"
-    echo ""
-    read -p "  Choice [1]: " VAULT_CHOICE
-    VAULT_CHOICE="${VAULT_CHOICE:-1}"
+    warn "Obsidian not detected. Install Obsidian and enable the CLI."
+  fi
 
-    case "$VAULT_CHOICE" in
-      1)
-        VAULT_BACKEND="plain"
-        VAULT_PATH="$HOME/.praxis-vault"
-        mkdir -p "$VAULT_PATH"
-        ;;
-      2)
-        VAULT_BACKEND="logseq"
-        # Try to detect Logseq path
-        LOGSEQ_DETECTED=""
-        LOGSEQ_CANDIDATES=(
-          "$HOME/Documents/Logseq"
-          "$HOME/Logseq"
-        )
-        for CANDIDATE in "${LOGSEQ_CANDIDATES[@]}"; do
-          if [[ -d "$CANDIDATE" ]]; then
-            LOGSEQ_DETECTED="$CANDIDATE"
-            break
-          fi
-        done
-        if [[ -n "$LOGSEQ_DETECTED" ]]; then
-          echo -e "  Detected Logseq at: ${BOLD}$LOGSEQ_DETECTED${NC}"
-          read -p "  Use this path? [Y/n] " USE_LOGSEQ
-          if [[ "${USE_LOGSEQ:-Y}" =~ ^[Yy]$ ]]; then
-            VAULT_PATH="$LOGSEQ_DETECTED"
-          fi
-        fi
-        if [[ -z "$VAULT_PATH" ]]; then
-          read -p "  Logseq vault path: " VAULT_PATH
-          VAULT_PATH="${VAULT_PATH/#\~/$HOME}"
-        fi
-        ;;
-      3)
-        VAULT_BACKEND="custom"
-        read -p "  Vault path: " VAULT_PATH
-        VAULT_PATH="${VAULT_PATH/#\~/$HOME}"
-        ;;
-      4)
-        VAULT_BACKEND="plain"
-        VAULT_PATH="$HOME/.praxis-vault"
-        mkdir -p "$VAULT_PATH"
-        warn "Using default ~/.praxis-vault. Reconfigure later via install.sh"
-        ;;
-      *)
-        fail "Invalid choice: $VAULT_CHOICE"
-        exit 1
-        ;;
-    esac
+  # Auto-detect vault path
+  DETECTED=""
+  CANDIDATES=(
+    "$HOME/Documents/Obsidian"
+    "$HOME/Obsidian"
+    "$HOME/Documents/Vault"
+  )
+  if [[ "$PLATFORM" == "darwin" ]]; then
+    CANDIDATES+=("$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents")
+  fi
+  for CANDIDATE in "${CANDIDATES[@]}"; do
+    if [[ -d "$CANDIDATE" ]]; then
+      DETECTED="$CANDIDATE"
+      break
+    fi
+  done
+
+  if [[ -n "$DETECTED" ]]; then
+    echo -e "  Detected vault at: ${BOLD}$DETECTED${NC}"
+    read -p "  Use this path? [Y/n] " USE_DETECTED
+    if [[ "${USE_DETECTED:-Y}" =~ ^[Yy]$ ]]; then
+      VAULT_PATH="$DETECTED"
+    fi
+  fi
+
+  if [[ -z "$VAULT_PATH" ]]; then
+    read -p "  Obsidian vault path: " VAULT_PATH
+    VAULT_PATH="${VAULT_PATH/#\~/$HOME}"
   fi
 
   # Validate path exists or create it
@@ -351,29 +295,21 @@ else
   echo "    npx get-shit-done-cc --claude --global"
 fi
 
-if [[ "$VAULT_BACKEND" == "obsidian" ]]; then
-  if command -v obsidian &>/dev/null; then
-    ok "Obsidian CLI available"
-    # Detect vault name and store in config
-    VAULT_NAME=$(obsidian vaults verbose 2>/dev/null | head -1 | cut -f1)
-    if [[ -n "$VAULT_NAME" ]]; then
-      ok "Vault detected: $VAULT_NAME"
-      # Add vault_name to config
-      if [[ -f "$CONFIG_FILE" ]]; then
-        jq --arg vn "$VAULT_NAME" '.vault_name = $vn' "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
-      fi
-    else
-      warn "Could not detect vault name. Add vault_name to ~/.claude/praxis.config.json manually."
+if command -v obsidian &>/dev/null; then
+  ok "Obsidian CLI available"
+  # Detect vault name and store in config
+  VAULT_NAME=$(obsidian vaults verbose 2>/dev/null | head -1 | cut -f1)
+  if [[ -n "$VAULT_NAME" ]]; then
+    ok "Vault detected: $VAULT_NAME"
+    # Add vault_name to config
+    if [[ -f "$CONFIG_FILE" ]]; then
+      jq --arg vn "$VAULT_NAME" '.vault_name = $vn' "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
     fi
   else
-    warn "Obsidian CLI not found. Enable it in Obsidian Settings > General > Command line interface."
+    warn "Could not detect vault name. Add vault_name to ~/.claude/praxis.config.json manually."
   fi
 else
-  if ! command -v rg &>/dev/null; then
-    warn "ripgrep (rg) not found. Install it for vault search: $PKG_INSTALL ripgrep"
-  else
-    ok "ripgrep found (used for vault search)"
-  fi
+  warn "Obsidian CLI not found. Enable it in Obsidian Settings > General > Command line interface."
 fi
 
 mkdir -p "$HOME/bin"
@@ -518,11 +454,7 @@ verify "[[ -d '$VAULT_PATH' ]]"                      "Vault directory accessible
 verify "command -v claude"                           "Claude Code CLI available"
 verify "command -v node"                             "Node.js available"
 verify "command -v jq"                               "jq available"
-if [[ "$VAULT_BACKEND" == "obsidian" ]]; then
-  verify "command -v obsidian"                         "Obsidian CLI available"
-else
-  verify "command -v rg"                               "ripgrep available"
-fi
+verify "command -v obsidian"                         "Obsidian CLI available"
 
 echo ""
 echo -e "  Checks: ${BOLD}$PASS/$TOTAL passed${NC}"

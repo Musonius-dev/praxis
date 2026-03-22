@@ -57,18 +57,10 @@ for kit_dir in "$REPO_PATH"/kits/*/; do
   fi
 done
 
-# ─── Verify key tools (conditional on backend) ───
+# ─── Verify key tools ───
 echo ""
 echo "Verifying tools..."
-VAULT_BACKEND=""
-if [[ -f "$CONFIG_FILE" ]]; then
-  VAULT_BACKEND=$(jq -r '.vault_backend // "obsidian"' "$CONFIG_FILE" 2>/dev/null)
-fi
-if [[ "$VAULT_BACKEND" == "obsidian" ]]; then
-  command -v obsidian &>/dev/null && echo "  ✓ Obsidian CLI available" || echo "  ✗ Obsidian CLI not found"
-else
-  command -v rg &>/dev/null && echo "  ✓ ripgrep available" || echo "  ✗ ripgrep not found"
-fi
+command -v obsidian &>/dev/null && echo "  ✓ Obsidian CLI available" || echo "  ✗ Obsidian CLI not found"
 command -v claude &>/dev/null && echo "  ✓ claude available" || echo "  ✗ claude not found"
 command -v node &>/dev/null && echo "  ✓ node available" || echo "  ✗ node not found"
 

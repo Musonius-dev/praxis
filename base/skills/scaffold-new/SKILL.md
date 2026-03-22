@@ -140,10 +140,8 @@ Vault indexing is automatic.
 
 ## Phase 7 — Confirm & Open Vault
 
-Open the vault in the user's app (backend-conditional):
-- `obsidian` → `open "obsidian://open?vault=Obsidian"`
-- `logseq` → `open "logseq://graph/{vault_name}"`
-- `plain` / `custom` → print vault path for user to open manually
+Open the vault in Obsidian:
+- `open "obsidian://open?vault=Obsidian"`
 
 Print summary table with all created files and bootstrap sequence.
 

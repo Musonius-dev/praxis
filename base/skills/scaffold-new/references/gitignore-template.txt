@@ -14,7 +14,6 @@ agent-memory.jsonl
 .obsidian-local/
 .obsidian/workspace
 .obsidian/workspace.json
-.logseq/
 
 # ── OS and Editor Noise ───────────────────────────────────────────────────
 .DS_Store

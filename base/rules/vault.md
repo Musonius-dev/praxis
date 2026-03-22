@@ -3,20 +3,13 @@
 
 ---
 
-## Backend Detection
-Read `vault_backend` from `~/.claude/praxis.config.json`. Defaults to `"obsidian"` if absent.
+## Vault Backend
 
-| Backend | Search command | Update after write | Link format |
-|---------|---------------|-------------------|-------------|
-| `obsidian` | `obsidian search query="{query}" limit=5` | no-op (real-time indexing) | `[[wikilinks]]` |
-| `logseq` | `rg -l "{query}" {vault_path} --glob "*.md" \| head -5` | no-op | standard markdown links |
-| `plain` | `rg -l "{query}" {vault_path} --glob "*.md" \| head -5` | no-op | standard markdown links |
-| `custom` | `rg -l "{query}" {vault_path} --glob "*.md" \| head -5` | no-op | standard markdown links |
-
-**Note:** The Obsidian CLI requires Obsidian to be running. If Obsidian is not running, vault search will fail.
+Vault backend is Obsidian. Search: `obsidian search query="{query}" limit=5`
 Scope searches with `path=` filter: `obsidian search query="{query}" path="01_Projects" limit=5`
 
-All commands below use the backend table above. When a step says "vault search" or "vault update", substitute the correct command for the active backend.
+**Note:** The Obsidian CLI requires Obsidian to be running. If Obsidian is not running, vault search will fail.
+Use `[[wikilinks]]` for all internal vault references.
 
 ## Vault Location
 Read vault_path from `~/.claude/praxis.config.json`.
@@ -51,7 +44,6 @@ Never ask "should I save this?" for the above categories — just save it.
 
 ### No manual index update needed
 - Obsidian indexes vault changes in real-time — no update command required.
-- For all other backends: files are read directly, no indexing needed.
 
 ---
 
@@ -83,9 +75,7 @@ source: agent | human | meeting
 ---
 ```
 
-Link format depends on backend:
-- `obsidian` → use `[[wikilinks]]` for all internal vault references
-- `logseq`, `plain`, `custom` → use standard markdown links
+Use `[[wikilinks]]` for all internal vault references.
 
 ### Bootstrap templates
 If `status.md`, `tasks.md`, or `_index.md` are missing from a project vault directory,

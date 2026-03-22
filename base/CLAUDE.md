@@ -57,7 +57,6 @@ Vault path and backend are machine-specific. Read from `~/.claude/praxis.config.
 ```json
 { "vault_path": "/path/to/vault", "vault_backend": "obsidian" }
 ```
-Supported backends: `obsidian` (default), `logseq`, `plain`, `custom`.
 If config file is missing: tell the user to run `praxis/install.sh`.
 All `{vault_path}` references in rules and skills resolve from this config.
 
@@ -75,7 +74,7 @@ Context is volatile. Files are permanent. Act accordingly.
 ## Vault Protocol
 - ALWAYS run a vault search before reading vault files (see vault.md backend table).
 - Obsidian indexes in real-time — no manual update command needed.
-- Link format: obsidian → `[[wikilinks]]`; logseq/plain/custom → standard markdown links.
+- Link format: `[[wikilinks]]` for all internal vault references.
 - Detect project from CWD matching `local_path` in `_index.md`.
 
 ## MCP Servers
@@ -135,7 +134,7 @@ Kit manifests live in `~/.claude/kits/<name>/KIT.md`.
 | `~/.claude/rules/git-workflow.md` | Commits, branches, identity verification |
 | `~/.claude/rules/security.md` | Secrets, credentials, auth patterns |
 | `~/.claude/rules/communication.md` | Client writing, no AI attribution |
-| `~/.claude/rules/vault.md` | Second brain integration — obsidian, logseq, or plain markdown |
+| `~/.claude/rules/vault.md` | Second brain integration — Obsidian vault |
 | `~/.claude/rules/architecture.md` | ADR format, What/So What/Now What, risk docs |
 | `~/.claude/rules/context-management.md` | GSD/Ralph anti-rot, context reset protocol |
 

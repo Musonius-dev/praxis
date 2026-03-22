@@ -19,7 +19,7 @@
     "type": "git",
     "url": "https://github.com/arcanesme/praxis.git"
   },
-  "keywords": ["claude-code", "ai-harness", "vault", "obsidian", "logseq", "workflow", "gsd"],
+  "keywords": ["claude-code", "ai-harness", "vault", "obsidian", "workflow", "gsd"],
   "author": "arcanesme",
   "license": "MIT",
   "engines": {

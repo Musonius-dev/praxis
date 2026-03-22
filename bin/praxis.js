@@ -107,43 +107,7 @@ async function install() {
     const readline = require('readline/promises');
     const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
-    console.log('');
-    console.log('  Choose a vault backend:');
-    console.log('    [1] Obsidian (default)');
-    console.log('    [2] Logseq');
-    console.log('    [3] Plain markdown (~/.praxis-vault)');
-    console.log('    [4] Custom path');
-    console.log('');
-    const backendChoice = await rl.question('  Choice [1]: ');
-    const choice = (backendChoice || '1').trim();
-
-    let vaultBackend = 'obsidian';
-    let vaultPath = '';
-
-    switch (choice) {
-      case '1':
-        vaultBackend = 'obsidian';
-        vaultPath = await rl.question('  Obsidian vault path: ');
-        break;
-      case '2':
-        vaultBackend = 'logseq';
-        vaultPath = await rl.question('  Logseq vault path: ');
-        break;
-      case '3':
-        vaultBackend = 'plain';
-        vaultPath = path.join(os.homedir(), '.praxis-vault');
-        fs.mkdirSync(vaultPath, { recursive: true });
-        ok('Created ' + vaultPath);
-        break;
-      case '4':
-        vaultBackend = 'custom';
-        vaultPath = await rl.question('  Vault path: ');
-        break;
-      default:
-        vaultBackend = 'obsidian';
-        vaultPath = await rl.question('  Vault path: ');
-        break;
-    }
+    let vaultPath = await rl.question('  Obsidian vault path: ');
     rl.close();
 
     if (vaultPath) {
@@ -153,7 +117,7 @@ async function install() {
     const config = {
       version: '1.1.0',
       vault_path: vaultPath || '',
-      vault_backend: vaultBackend,
+      vault_backend: 'obsidian',
       repo_path: PKG_DIR
     };
     fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2) + '\n');
@@ -162,22 +126,9 @@ async function install() {
     dim('praxis.config.json already exists — skipping');
   }
 
-  // Tool checks (conditional on backend)
+  // Tool checks
   header('Tool check');
-  let vaultBackendForCheck = 'obsidian';
-  if (fs.existsSync(CONFIG_FILE)) {
-    try {
-      const cfg = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8'));
-      vaultBackendForCheck = cfg.vault_backend || 'obsidian';
-    } catch {}
-  }
-
-  const baseTools = ['node', 'claude', 'jq'];
-  if (vaultBackendForCheck === 'obsidian') {
-    baseTools.push('obsidian');
-  } else {
-    baseTools.push('rg');
-  }
+  const baseTools = ['node', 'claude', 'jq', 'obsidian'];
   for (const tool of baseTools) {
     if (toolExists(tool)) {
       ok(tool + ' available');
@@ -262,21 +213,9 @@ function health() {
     } catch { total++; fail('praxis.config.json is invalid JSON'); }
   }
 
-  // Tools (conditional on backend)
+  // Tools
   console.log('\nTools:');
-  let healthBackend = 'obsidian';
-  if (fs.existsSync(CONFIG_FILE)) {
-    try {
-      const cfg = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8'));
-      healthBackend = cfg.vault_backend || 'obsidian';
-    } catch {}
-  }
-  const healthTools = ['node', 'claude', 'jq'];
-  if (healthBackend === 'obsidian') {
-    healthTools.push('obsidian');
-  } else {
-    healthTools.push('rg');
-  }
+  const healthTools = ['node', 'claude', 'jq', 'obsidian'];
   for (const tool of healthTools) {
     check(toolExists(tool), tool + ' available');
   }

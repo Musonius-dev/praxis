@@ -84,7 +84,7 @@ For technical research: `/discover` (structured options evaluation before decisi
 
 Key additions in this version:
 - **context-management** — context brackets (FRESH/MODERATE/DEPLETED/CRITICAL) adapt behavior to session stage
-- **vault** — multi-backend vault integration (obsidian, logseq, plain, custom)
+- **vault** — Obsidian vault integration
 
 ## Ralph
 
@@ -111,7 +111,7 @@ Ralph is not a replacement for GSD — it runs GSD internally per story. Use GSD
 │  GSD → Superpowers → Ralph             │
 ├────────────────────────────────────────┤
 │  Vault layer                           │
-│  obsidian | logseq | plain | custom    │
+│  Obsidian                              │
 ├────────────────────────────────────────┤
 │  Claude Code                           │
 │  ~/.claude/ + plugins + subagents      │
@@ -131,16 +131,9 @@ More kits coming. See `docs/creating-a-kit.md` to build your own.
 
 ## Vault integration
 
-Praxis integrates with a persistent vault for project state, session learnings, and architecture decisions. Four backends are supported:
+Praxis integrates with an Obsidian vault for project state, session learnings, and architecture decisions.
 
-| Backend | Description | Search tool |
-|---------|-------------|-------------|
-| `obsidian` | Obsidian vault (default) | [Obsidian CLI](https://obsidian.md) |
-| `logseq` | Logseq graph | ripgrep |
-| `plain` | Plain markdown directory (`~/.praxis-vault`) | ripgrep |
-| `custom` | Any directory you choose | ripgrep |
-
-The backend and vault path are configured per machine during install:
+The vault path is configured per machine during install:
 
 ```json
 {
@@ -151,8 +144,7 @@ The backend and vault path are configured per machine during install:
 }
 ```
 
-- **obsidian**: requires [Obsidian CLI](https://obsidian.md) (enable in Obsidian Settings > General > Command line interface). Obsidian must be running for vault search.
-- **logseq/plain/custom**: uses ripgrep for vault search — no extra dependencies
+Requires [Obsidian CLI](https://obsidian.md) (enable in Obsidian Settings > General > Command line interface). Obsidian must be running for vault search.
 
 ## Updating
 
@@ -185,7 +177,7 @@ The git-clone + `install.sh` path uses symlinks instead of copies, so edits in t
 - macOS or Linux
 - Claude Code CLI
 - Node.js 18+
-- Obsidian, Logseq, or a plain markdown directory (optional, for vault integration)
+- Obsidian with CLI enabled (for vault integration)
 
 ## License
 
