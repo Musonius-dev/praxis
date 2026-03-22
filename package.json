@@ -1,6 +1,6 @@
 {
   "name": "@esoteric-logic/praxis-harness",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Layered Claude Code harness — workflow discipline, AI-Kits, persistent vault integration",
   "bin": {
     "praxis-harness": "./bin/praxis.js"
@@ -19,7 +19,14 @@
     "type": "git",
     "url": "https://github.com/arcanesme/praxis.git"
   },
-  "keywords": ["claude-code", "ai-harness", "vault", "obsidian", "workflow", "gsd"],
+  "keywords": [
+    "claude-code",
+    "ai-harness",
+    "vault",
+    "obsidian",
+    "workflow",
+    "gsd"
+  ],
   "author": "arcanesme",
   "license": "MIT",
   "engines": {
