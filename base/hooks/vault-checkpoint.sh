@@ -25,6 +25,23 @@ BRANCH=$(git --no-pager rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown
 LAST_COMMIT=$(git --no-pager log --oneline -1 2>/dev/null || echo "no commits")
 PROJECT_DIR=$(basename "$PWD")
 
+STATUS_FILE="$VAULT_PATH/status.md"
+PROGRESS_FILE="$VAULT_PATH/claude-progress.json"
+
+CURRENT_PLAN="none"
+LOOP_POSITION="unknown"
+if [[ -f "$STATUS_FILE" ]]; then
+  CURRENT_PLAN=$(grep "^current_plan:" "$STATUS_FILE" | sed 's/current_plan: *//' | head -1)
+  LOOP_POSITION=$(grep "^loop_position:" "$STATUS_FILE" | sed 's/loop_position: *//' | head -1)
+  [[ -z "$CURRENT_PLAN" ]] && CURRENT_PLAN="none"
+  [[ -z "$LOOP_POSITION" ]] && LOOP_POSITION="unknown"
+fi
+
+RALPH_STORY="inactive"
+if [[ -f "$PROGRESS_FILE" ]]; then
+  RALPH_STORY=$(jq -r '.ralph_state.current_story // "inactive"' "$PROGRESS_FILE" 2>/dev/null)
+fi
+
 cat > "$CHECKPOINT_FILE" <<EOF
 ---
 tags: [checkpoint, compact]
@@ -39,6 +56,15 @@ $PWD
 ## Git State
 - Branch: $BRANCH
 - Last commit: $LAST_COMMIT
+
+## Active Plan
+$CURRENT_PLAN
+
+## GSD Phase
+$LOOP_POSITION
+
+## Ralph State
+$RALPH_STORY
 
 ## Note
 This checkpoint was auto-written by the PreCompact hook.
