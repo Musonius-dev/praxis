@@ -70,22 +70,18 @@ Read the active plan to resume where you left off.
 
 ## Vault Recovery
 
-### QMD Fails
+### Obsidian CLI Fails
 
-**Symptom**: `qmd search` or `qmd update` returns errors.
+**Symptom**: `obsidian search` returns errors or "command not found".
 
-**Cause**: BUN_INSTALL environment variable interferes with Node.js qmd runtime.
+**Cause**: Obsidian is not running, or CLI is not enabled.
 
 **Fix**:
-```bash
-unset BUN_INSTALL
-qmd update
-```
+1. Open Obsidian
+2. Enable CLI: Settings > General > Command line interface (toggle on)
+3. Verify: `obsidian --help`
 
-If qmd is not found at all:
-```bash
-npm install -g @anthropic-ai/qmd
-```
+If the command is still not found, ensure `/Applications/Obsidian.app/Contents/MacOS/` is in your PATH.
 
 ### Status.md Stale
 
@@ -96,7 +92,6 @@ npm install -g @anthropic-ai/qmd
 **Fix**:
 1. Run `/standup` to see current state
 2. Manually update status.md if needed — set `last_updated:` to today
-3. Run `unset BUN_INSTALL && qmd update` after editing
 
 ## Kit Troubleshooting
 
@@ -135,20 +130,16 @@ claude mcp add server-name npx -- -y @scope/package@latest
 
 ## Install Troubleshooting
 
-### QMD Not Found After Install
+### Obsidian CLI Not Found After Install
 
-**Symptom**: `command -v qmd` returns nothing after running install.sh.
+**Symptom**: `command -v obsidian` returns nothing after running install.sh.
 
-**Cause**: npm global install path not in PATH, or install failed silently.
+**Cause**: Obsidian CLI not enabled, or Obsidian not installed.
 
 **Fix**:
-```bash
-# Retry install
-npm install -g @anthropic-ai/qmd
-
-# Verify
-command -v qmd
-```
+1. Install Obsidian from https://obsidian.md
+2. Open Obsidian > Settings > General > Command line interface (toggle on)
+3. Verify: `obsidian --help`
 
 ### Vault Path Wrong
 

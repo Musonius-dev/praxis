@@ -53,7 +53,7 @@ Before touching any implementation code:
   - **Now What**: {what to do to prevent recurrence}
   - **Date**: {YYYY-MM-DD}
   ```
-- Run `unset BUN_INSTALL && qmd update` after writing.
+- Vault indexing is automatic.
 
 **Rules:**
 - Never fix without first reproducing.

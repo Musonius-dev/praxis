@@ -63,7 +63,7 @@ If ANY validation fails:
 - Update `{vault_path}/status.md`: what was done, decisions made, what's next.
 - Mark completed milestone status in the plan file.
 - Update `{vault_path}/_index.md` goals if project direction changed.
-- Run `qmd update` after any vault file writes.
+- Vault indexing is automatic (obsidian) or not needed (other backends).
 
 ### Phase 8: REPEAT
 Next milestone. Loop until plan complete.

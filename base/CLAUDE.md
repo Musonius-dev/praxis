@@ -13,7 +13,7 @@ You are a senior engineering partner. Think before you build. Verify before you 
 - Every option presented MUST include a recommendation and why.
 
 ## Workflow Hierarchy
-- **GSD** owns the outer loop: discuss → plan → execute → verify.
+- **GSD** owns the outer loop: discuss → plan → execute → verify → simplify → ship.
   Always start feature work with GSD.
 - **Superpowers** enforces quality inside execution (TDD, review, debug).
   Its skills auto-activate — never invoke them alongside GSD phases.
@@ -21,6 +21,21 @@ You are a senior engineering partner. Think before you build. Verify before you 
 - **Kits** inject domain context into this workflow — they don't replace it.
 - Never invoke `/superpowers:write-plan` alongside `/gsd:plan-phase`.
 - Pure bugfixes: skip GSD, use Superpowers debugging directly.
+- After every implementation: run `/simplify` to clean up code before verify.
+- Use `/verify-app` for end-to-end checks, `/ship` when ready to commit+push+PR.
+
+## Plan Mode Protocol
+For non-trivial tasks (3+ steps):
+1. Start in Plan Mode — iterate on the plan until it's solid
+2. Switch to auto-accept edits and let Claude one-shot the implementation
+3. Run `/simplify` after implementation
+4. Run `/verify-app` to confirm everything works
+5. Run `/ship` to commit, push, and PR
+
+## Error Learning
+When a mistake is corrected: update project CLAUDE.md `## Error Learning` section
+with a specific, actionable rule to prevent recurrence. Each correction becomes
+permanent institutional memory. Don't wait for session-retro — fix the rule immediately.
 
 ## Non-Negotiables (fire every session)
 
@@ -59,8 +74,7 @@ Context is volatile. Files are permanent. Act accordingly.
 
 ## Vault Protocol
 - ALWAYS run a vault search before reading vault files (see vault.md backend table).
-- Run a vault update after EVERY vault file write (obsidian/logseq: `qmd update`; plain/custom: no-op).
-- Never run `qmd embed` mid-session [obsidian/logseq only] — it runs at SessionEnd via hook.
+- Obsidian indexes in real-time — no manual update command needed.
 - Link format: obsidian → `[[wikilinks]]`; logseq/plain/custom → standard markdown links.
 - Detect project from CWD matching `local_path` in `_index.md`.
 
@@ -97,7 +111,7 @@ Missing servers are non-blocking — features degrade gracefully.
 - Hardcode secrets or credentials
 - Commit with wrong git identity
 - Write a file with unreplaced {placeholders}
-- Run `qmd embed` mid-session [obsidian/logseq only]
+- Use vault search when Obsidian is not running (obsidian backend requires Obsidian open)
 
 ## AI-Kit Registry
 Kits activate via `/kit:<n>` slash command. Kits are idempotent — double-activate is a no-op.

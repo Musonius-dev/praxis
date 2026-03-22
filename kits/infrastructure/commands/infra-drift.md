@@ -38,7 +38,7 @@ Recommendation: {accept drift | remediate | investigate}
 **Step 4 — Document**
 If drift is Concerning or Critical:
 - Write findings to `{vault_path}/notes/{date}_drift-report.md`
-- Run `unset BUN_INSTALL && qmd update`
+- Vault indexing is automatic.
 
 **Rules:**
 - Drift detection is read-only. Never modify state or config during drift check.

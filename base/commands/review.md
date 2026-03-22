@@ -72,7 +72,7 @@ CLEAN
   source: agent
   ---
   ```
-- Run `unset BUN_INSTALL && qmd update` after writing.
+- Vault indexing is automatic.
 
 **Rules:**
 - Works independently of GSD phases.

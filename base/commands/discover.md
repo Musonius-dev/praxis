@@ -8,7 +8,7 @@ You are running a structured technical discovery.
 - Read vault_path from `~/.claude/praxis.config.json`
 - What decision needs to be made? (one sentence)
 - What are the constraints? (compliance, performance, compatibility, cost)
-- What is already known? (run `unset BUN_INSTALL && qmd search "{topic}" -n 5`)
+- What is already known? (run `obsidian search query="{topic}" limit=5`)
 
 **Step 2 — Research options**
 - Identify 2-4 viable options. For each:
@@ -41,7 +41,6 @@ You are running a structured technical discovery.
   ---
   ```
 - Include all options evaluated, recommendation, and confidence
-- Run `unset BUN_INSTALL && qmd update`
 - Report: "Discovery written. Run `/spec` to formalize as ADR, or `/gsd:discuss` to proceed."
 
 **Rules:**

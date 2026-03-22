@@ -24,7 +24,7 @@ Run `terraform plan -detailed-exitcode` after apply:
 Write apply result to vault:
 - Update `{vault_path}/status.md` with What / So What / Now What
 - If this was a significant change: write to `{vault_path}/specs/` as a decision record
-- Run `unset BUN_INSTALL && qmd update`
+- Vault indexing is automatic.
 
 **Step 5 — Report**
 ```

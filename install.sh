@@ -351,15 +351,24 @@ else
   echo "    npx get-shit-done-cc --claude --global"
 fi
 
-if [[ "$VAULT_BACKEND" == "obsidian" || "$VAULT_BACKEND" == "logseq" ]]; then
-  if ! command -v qmd &>/dev/null; then
-    echo "  Installing qmd..."
-    npm install -g @anthropic-ai/qmd 2>>"$LOG_FILE" && ok "qmd installed" || warn "qmd install failed. Install manually: npm install -g @anthropic-ai/qmd"
+if [[ "$VAULT_BACKEND" == "obsidian" ]]; then
+  if command -v obsidian &>/dev/null; then
+    ok "Obsidian CLI available"
+    # Detect vault name and store in config
+    VAULT_NAME=$(obsidian vaults verbose 2>/dev/null | head -1 | cut -f1)
+    if [[ -n "$VAULT_NAME" ]]; then
+      ok "Vault detected: $VAULT_NAME"
+      # Add vault_name to config
+      if [[ -f "$CONFIG_FILE" ]]; then
+        jq --arg vn "$VAULT_NAME" '.vault_name = $vn' "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
+      fi
+    else
+      warn "Could not detect vault name. Add vault_name to ~/.claude/praxis.config.json manually."
+    fi
   else
-    ok "qmd found"
+    warn "Obsidian CLI not found. Enable it in Obsidian Settings > General > Command line interface."
   fi
 else
-  echo "  qmd not required for $VAULT_BACKEND backend"
   if ! command -v rg &>/dev/null; then
     warn "ripgrep (rg) not found. Install it for vault search: $PKG_INSTALL ripgrep"
   else
@@ -509,8 +518,8 @@ verify "[[ -d '$VAULT_PATH' ]]"                      "Vault directory accessible
 verify "command -v claude"                           "Claude Code CLI available"
 verify "command -v node"                             "Node.js available"
 verify "command -v jq"                               "jq available"
-if [[ "$VAULT_BACKEND" == "obsidian" || "$VAULT_BACKEND" == "logseq" ]]; then
-  verify "command -v qmd"                              "qmd available"
+if [[ "$VAULT_BACKEND" == "obsidian" ]]; then
+  verify "command -v obsidian"                         "Obsidian CLI available"
 else
   verify "command -v rg"                               "ripgrep available"
 fi

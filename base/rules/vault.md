@@ -6,12 +6,15 @@
 ## Backend Detection
 Read `vault_backend` from `~/.claude/praxis.config.json`. Defaults to `"obsidian"` if absent.
 
-| Backend | Search command | Update after write | Link format | Embed |
-|---------|---------------|-------------------|-------------|-------|
-| `obsidian` | `unset BUN_INSTALL && qmd search "{query}" -n 5` | `unset BUN_INSTALL && qmd update` | `[[wikilinks]]` | SessionEnd hook |
-| `logseq` | `unset BUN_INSTALL && qmd search "{query}" -n 5` | `unset BUN_INSTALL && qmd update` | standard markdown links | SessionEnd hook |
-| `plain` | `rg -l "{query}" {vault_path} --glob "*.md" \| head -5` | no-op | standard markdown links | n/a |
-| `custom` | `rg -l "{query}" {vault_path} --glob "*.md" \| head -5` | no-op | standard markdown links | n/a |
+| Backend | Search command | Update after write | Link format |
+|---------|---------------|-------------------|-------------|
+| `obsidian` | `obsidian search query="{query}" limit=5` | no-op (real-time indexing) | `[[wikilinks]]` |
+| `logseq` | `rg -l "{query}" {vault_path} --glob "*.md" \| head -5` | no-op | standard markdown links |
+| `plain` | `rg -l "{query}" {vault_path} --glob "*.md" \| head -5` | no-op | standard markdown links |
+| `custom` | `rg -l "{query}" {vault_path} --glob "*.md" \| head -5` | no-op | standard markdown links |
+
+**Note:** The Obsidian CLI requires Obsidian to be running. If Obsidian is not running, vault search will fail.
+Scope searches with `path=` filter: `obsidian search query="{query}" path="01_Projects" limit=5`
 
 All commands below use the backend table above. When a step says "vault search" or "vault update", substitute the correct command for the active backend.
 
@@ -46,13 +49,9 @@ This is entropy. The vault prevents it.
 
 Never ask "should I save this?" for the above categories — just save it.
 
-### Vault update after every write
-- Run a vault update after EVERY vault file write. No exceptions.
-- Do not batch — run after each write, not once at the end.
-- For `plain` and `custom` backends: no update command needed (files are read directly).
-
-### Never run qmd embed mid-session [obsidian/logseq only]
-- `qmd embed` is the vector re-index. Slow. Runs at SessionEnd via hook.
+### No manual index update needed
+- Obsidian indexes vault changes in real-time — no update command required.
+- For all other backends: files are read directly, no indexing needed.
 
 ---
 

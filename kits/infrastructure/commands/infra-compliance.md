@@ -58,7 +58,7 @@ Overall: {PASS | ISSUES FOUND}
 
 **Step 6 — Document**
 Write compliance report to `{vault_path}/specs/{date}_compliance-check.md`
-Run `unset BUN_INSTALL && qmd update`
+Vault indexing is automatic.
 
 **Rules:**
 - Compliance checks are advisory. They do not modify infrastructure.

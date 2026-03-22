@@ -67,7 +67,7 @@ Classify each: type, tag (`bugfix|convention|perf|security|tooling|arch|process`
 For each finding with clear root cause:
 - Project-specific → `{vault_path}/notes/learnings.md`
 - Global/harness pattern → harness project learnings.md
-- Check for duplicates via `qmd search` before writing
+- Check for duplicates via `obsidian search` before writing
 
 Format:
 ```markdown
@@ -78,7 +78,7 @@ Format:
 - **Date**: {YYYY-MM-DD}
 ```
 
-Run `qmd update` after writing.
+Vault indexing is automatic.
 
 ## Phase 4 — Propose Rule Updates
 
@@ -139,7 +139,7 @@ Run inline staleness check across all `status.md` files in active projects.
 |-----------|--------|
 | Can't detect project | Ask, or write to fallback |
 | `claude-progress.json` missing | Create from template |
-| `qmd update` fails | Warn only |
+| Vault search fails | Warn only |
 | User declines all proposals | Log declines, proceed |
 
 ## Removal Condition

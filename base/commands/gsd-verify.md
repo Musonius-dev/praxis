@@ -21,12 +21,11 @@ If no commands are defined: warn and ask user for the correct commands.
 
 **Step 3 — On PASS**
 1. Update the active plan file: mark milestone status as complete
-2. Run `unset BUN_INSTALL && qmd update`
-3. Prompt: "Milestone verified. Ready to commit — proceed?"
-4. After commit: check if more milestones remain
+2. Prompt: "Milestone verified. Ready to commit — proceed?"
+3. After commit: check if more milestones remain
    - Yes → "Run `/gsd:execute` for the next milestone."
    - No → "All milestones complete. Running self-review."
-5. After ALL milestones: trigger Self-Review Protocol
+4. After ALL milestones: trigger Self-Review Protocol
    - Launch a subagent to review the full diff as a critical code reviewer
    - Subagent receives ONLY: the diff, the SPEC, relevant rules files
    - Address all Critical and Major findings before reporting done
@@ -58,11 +57,12 @@ After self-review passes, write phase summary:
   ## Deferred Items
   - {item}: {reason deferred, suggested next step}
   ```
-- Run `unset BUN_INSTALL && qmd update`
-- Report: "Phase summary written. Run `/session-retro` for learnings."
+- Run `/simplify` on the full diff to clean up implementation
+- Report: "Phase summary written. Run `/verify-app` for e2e checks, then `/ship` to commit+push+PR."
 
 **Rules:**
 - UNIFY fires after ALL milestones verified, not per-milestone. session-retro still runs at session end for learnings — complementary, not redundant.
+- `/simplify` runs after UNIFY, before shipping. It is the quality gate between "it works" and "it's clean".
 
 **Step 4 — On FAIL (Stop-and-Fix)**
 1. Identify the failure: exact error, file, line

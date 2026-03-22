@@ -14,11 +14,11 @@ You are creating a spec for the current project.
 Ask the following in a single message:
 - What is this spec for? (one sentence)
 - Type: ADR (architecture decision) / PLAN (work plan) / RISK (risk register entry) / SPEC (technical spec)
-- Is there an existing related spec in `specs/`? (run `unset BUN_INSTALL && qmd search "{topic}" -n 3` first)
+- Is there an existing related spec in `specs/`? (run `obsidian search query="{topic}" limit=3` first)
 
 **Step 2b — Cross-spec conflict check**
 After the vault search from Step 2, check for conflicts with accepted ADRs:
-- Run: `unset BUN_INSTALL && qmd search "{topic}" -n 10`
+- Run: `obsidian search query="{topic}" limit=10`
 - For each result with `status: accepted` or `status: proposed`:
   - Compare the decision direction. Does the new spec contradict an accepted decision?
 - If conflict detected, present:
@@ -117,5 +117,5 @@ Who is responsible.
 **Step 5 — Write to vault**
 - Filename: `{YYYY-MM-DD}_{kebab-title}.md`
 - Location: `{vault_path}/specs/`
-- Run `unset BUN_INSTALL && qmd update` after writing
+- Vault indexing is automatic
 - Report: `✓ Spec written to {vault_path}/specs/{filename}`

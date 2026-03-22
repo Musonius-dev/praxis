@@ -173,8 +173,8 @@ async function install() {
   }
 
   const baseTools = ['node', 'claude', 'jq'];
-  if (vaultBackendForCheck === 'obsidian' || vaultBackendForCheck === 'logseq') {
-    baseTools.push('qmd');
+  if (vaultBackendForCheck === 'obsidian') {
+    baseTools.push('obsidian');
   } else {
     baseTools.push('rg');
   }
@@ -272,8 +272,8 @@ function health() {
     } catch {}
   }
   const healthTools = ['node', 'claude', 'jq'];
-  if (healthBackend === 'obsidian' || healthBackend === 'logseq') {
-    healthTools.push('qmd');
+  if (healthBackend === 'obsidian') {
+    healthTools.push('obsidian');
   } else {
     healthTools.push('rg');
   }

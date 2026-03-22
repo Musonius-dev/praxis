@@ -44,13 +44,30 @@ dev:    # fill in as project develops
 test:   # fill in as project develops
 lint:   # fill in as project develops
 build:  # fill in as project develops
+format: # fill in as project develops
 ```
+
+## Code Style
+- Prefer simple, readable code over clever abstractions
+- After finishing implementation, run `/simplify` to clean up
+- If a fix feels hacky, find a cleaner solution before finishing
+- No AI-generated comments or attributions in code or commits
+
+## Verification
+- Before marking any task complete, run the test suite
+- Check logs before claiming a bug is fixed
+- End every task instruction with a verification step
+- Use `/verify-app` for end-to-end checks
 
 ## Conventions
 - **Commits**: conventional commits (feat:, fix:, docs:, refactor:, test:, chore:)
 - **Branches**: `{type}/{description}` (e.g., `feat/add-auth`, `fix/nsg-rule`)
 - **Plans**: `{vault_path}/plans/YYYY-MM-DD_[task-slug].md`
 - **Learnings**: `{vault_path}/notes/learnings.md` using [LEARN:tag] schema
+
+## Error Learning
+<!-- When a mistake is corrected, write a new rule here to prevent recurrence -->
+<!-- Each rule should be specific and actionable -->
 
 ## Project-Specific Rules
 <!-- Add rules discovered during development -->

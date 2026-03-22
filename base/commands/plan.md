@@ -83,11 +83,9 @@ After building the milestone list:
 - Write to: `{vault_path}/plans/{YYYY-MM-DD}_{kebab-title}.md`
 - Update `status.md`: set `current_plan:`, update `last_updated`, update `## Now What`
 - Update `claude-progress.json` milestones array
-- Run `unset BUN_INSTALL && qmd update` after all writes
 - Report:
 ```
 ✓ Plan created:   {vault_path}/plans/{filename}
 ✓ status.md:      current_plan updated
 ✓ progress.json:  milestone added
-✓ QMD index:      updated
 ```

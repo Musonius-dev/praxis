@@ -54,10 +54,7 @@ Write a session snapshot to `claude-progress.json`:
 - Update `last_session` with current date and a note about the context reset
 - If Ralph is active: preserve `ralph_state` exactly as-is
 
-**Step 6 — Re-index vault**
-Run `unset BUN_INSTALL && qmd update`
-
-**Step 7 — Instruct the user**
+**Step 6 — Instruct the user**
 Print:
 ```
 Context checkpoint saved to:

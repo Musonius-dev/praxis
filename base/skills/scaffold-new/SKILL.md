@@ -24,7 +24,7 @@ Scaffolds a new project in phases:
 3. **Phase 2**: Scaffold repo `CLAUDE.md`
 4. **Phase 3**: Scaffold vault subtree
 5. **Phase 3.5**: Scaffold `claude-progress.json`
-6. **Phase 4**: QMD re-index + vault search check
+6. **Phase 4**: Vault search check
 7. **Phase 5**: Git init (if new repo)
 8. **Phase 5.5**: Install git hooks (optional)
 9. **Phase 6**: Update Project Registry + agenda.md
@@ -51,7 +51,7 @@ Read identity table from `~/.claude/rules/git-workflow.md`.
 
 Before asking, run vault duplicate check:
 ```bash
-unset BUN_INSTALL && qmd search "{slug}" -c projects -n 3
+obsidian search query="{slug}" path="01_Projects" limit=3
 ```
 
 Ask in one message:
@@ -104,15 +104,11 @@ Write to `{vault_path}/claude-progress.json`.
 
 ---
 
-## Phase 4 — Vault Re-Index
+## Phase 4 — Vault Search Check
 
-If `vault_backend` is `obsidian` or `logseq`:
-```bash
-unset BUN_INSTALL && qmd update
-```
+Vault indexing is automatic for `obsidian` backend. No manual re-index needed.
+Verify the new project is searchable: `obsidian search query="{slug}" limit=1`
 On failure: warn, do not block.
-
-If `vault_backend` is `plain` or `custom`: skip this phase (no indexing needed).
 
 ---
 
@@ -138,7 +134,7 @@ If no: skip silently.
 ## Phase 6 — Update Project Registry
 
 Append to vault CLAUDE.md Project Registry table and agenda.md.
-Run a vault update after writes (obsidian/logseq: `qmd update`; plain/custom: no-op).
+Vault indexing is automatic.
 
 ---
 
@@ -160,7 +156,7 @@ Print summary table with all created files and bootstrap sequence.
 - [ ] Phase 2: `{repo_root}/CLAUDE.md` — zero unreplaced placeholders
 - [ ] Phase 3: Vault subtree created
 - [ ] Phase 3.5: `claude-progress.json` created
-- [ ] Phase 4: Vault re-index (qmd update or skip for plain/custom)
+- [ ] Phase 4: Vault search check (automatic indexing)
 - [ ] Phase 5: Git identity verified
 - [ ] Phase 5.5: Hook decision made
 - [ ] Phase 6: Registry and agenda updated
@@ -173,7 +169,7 @@ Print summary table with all created files and bootstrap sequence.
 | Identity mismatch | STOP. Report. Do not commit. |
 | Files already exist | Ask before overwriting |
 | Unreplaced placeholder | Resolve before writing |
-| `qmd update` fails | Warn only |
+| Vault search fails | Warn only |
 
 ## Removal Conditions
 - Phase 0: Remove after 20+ consecutive correct identity resolutions over 60 days

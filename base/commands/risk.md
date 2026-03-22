@@ -7,7 +7,7 @@ You are adding a risk register entry for the current project.
 **Step 1 — Detect project and existing risks**
 - Read vault_path from `~/.claude/praxis.config.json`
 - Detect project from CWD
-- Run: `unset BUN_INSTALL && qmd search "risk register {project-slug}" -n 3`
+- Run: `obsidian search query="risk register {project-slug}" limit=3`
 - Check if `{vault_path}/specs/risk-register.md` exists
 - If found: read it to determine next sequential risk ID (R-01, R-02, etc.)
 
@@ -46,11 +46,8 @@ Append entry:
 
 **Step 4 — Surface critical risks**
 - If severity is Critical: add to `status.md` under `## So What` immediately.
-- Run `unset BUN_INSTALL && qmd update` after writing
-
 **Step 5 — Report**
 ```
 ✓ Risk {R-ID} added:    {title} [{severity}]
 ✓ Risk register:        {vault_path}/specs/risk-register.md
-✓ QMD index:            updated
 ```

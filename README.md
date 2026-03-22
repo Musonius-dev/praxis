@@ -135,8 +135,8 @@ Praxis integrates with a persistent vault for project state, session learnings, 
 
 | Backend | Description | Search tool |
 |---------|-------------|-------------|
-| `obsidian` | Obsidian vault (default) | qmd |
-| `logseq` | Logseq graph | qmd |
+| `obsidian` | Obsidian vault (default) | [Obsidian CLI](https://obsidian.md) |
+| `logseq` | Logseq graph | ripgrep |
 | `plain` | Plain markdown directory (`~/.praxis-vault`) | ripgrep |
 | `custom` | Any directory you choose | ripgrep |
 
@@ -146,12 +146,13 @@ The backend and vault path are configured per machine during install:
 {
   "vault_path": "/Users/you/Documents/Obsidian",
   "vault_backend": "obsidian",
+  "vault_name": "My Vault",
   "repo_path": "/Users/you/repos/praxis"
 }
 ```
 
-- **obsidian/logseq**: requires [qmd](https://npmjs.com/package/@anthropic-ai/qmd) (installed automatically)
-- **plain/custom**: uses ripgrep for vault search — no extra dependencies
+- **obsidian**: requires [Obsidian CLI](https://obsidian.md) (enable in Obsidian Settings > General > Command line interface). Obsidian must be running for vault search.
+- **logseq/plain/custom**: uses ripgrep for vault search — no extra dependencies
 
 ## Updating
 

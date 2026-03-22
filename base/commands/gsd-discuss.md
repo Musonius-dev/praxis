@@ -17,7 +17,7 @@ You are starting the GSD discuss phase — framing the problem before planning.
 Do NOT load rules, kit context, or session history at this phase.
 
 **Step 3 — Search for related work**
-Run: `unset BUN_INSTALL && qmd search "{topic}" -n 5`
+Run: `obsidian search query="{topic}" limit=5`
 Check if specs, prior plans, or research already exist for this topic.
 
 **Step 4 — SPEC questions**

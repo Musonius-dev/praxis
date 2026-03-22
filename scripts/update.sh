@@ -64,8 +64,8 @@ VAULT_BACKEND=""
 if [[ -f "$CONFIG_FILE" ]]; then
   VAULT_BACKEND=$(jq -r '.vault_backend // "obsidian"' "$CONFIG_FILE" 2>/dev/null)
 fi
-if [[ "$VAULT_BACKEND" == "obsidian" || "$VAULT_BACKEND" == "logseq" ]]; then
-  command -v qmd &>/dev/null && echo "  ✓ qmd available" || echo "  ✗ qmd not found"
+if [[ "$VAULT_BACKEND" == "obsidian" ]]; then
+  command -v obsidian &>/dev/null && echo "  ✓ Obsidian CLI available" || echo "  ✗ Obsidian CLI not found"
 else
   command -v rg &>/dev/null && echo "  ✓ ripgrep available" || echo "  ✗ ripgrep not found"
 fi

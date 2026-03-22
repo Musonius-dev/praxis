@@ -48,5 +48,4 @@ When a previously-passing milestone breaks:
 Vault is git-tracked. Read vault_path from `~/.claude/praxis.config.json`.
 - Auto-committed at session end by the export hook.
 - Do not manually commit vault files during a session unless explicitly asked.
-- After any vault write: run `qmd update` (BM25 re-index, fast).
-- Never run `qmd embed` mid-session — it runs at SessionEnd via hook.
+- Vault indexing is automatic (obsidian) or not needed (other backends).

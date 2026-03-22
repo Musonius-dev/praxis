@@ -64,7 +64,7 @@ Verify repo_root exists on disk.
 
 ## Phase 2 — Create Missing Vault Files
 Use same templates as scaffold-new (`references/` dir). Existing files untouched.
-Run `qmd update` after all writes.
+Vault indexing is automatic.
 
 ## Phase 3 — Update Repo CLAUDE.md
 If missing: create from template. If exists: add only missing sections (Vault Project, bootstrap, Identity). Preserve existing content.
@@ -79,7 +79,7 @@ Read vault CLAUDE.md registry. Row missing → append. Row inaccurate → update
 | `_index.md` missing | STOP — run scaffold-new instead |
 | `local_path` doesn't exist | Warn, ask for correct path |
 | Existing file would be overwritten | Ask explicit confirmation |
-| `qmd update` fails | Warn only |
+| Vault search fails | Warn only |
 
 ## Removal Condition
 Remove when all active projects are migrated and scaffold-new is the only entry path.

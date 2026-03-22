@@ -19,7 +19,7 @@ Read vault_path from `~/.claude/praxis.config.json`. If missing: tell user to ru
 - [ ] Total stories ≤15
 - [ ] ralph_state.prd_path set in claude-progress.json
 - [ ] status.md updated with PRD reference
-- [ ] qmd index updated
+- [ ] Vault indexed (automatic)
 
 ## NON-GOALS
 - Does not execute stories — that is Ralph's job
@@ -84,14 +84,12 @@ Use `references/prd-template.md` as the canonical format.
    - Set `ralph_state.mode` to "idle"
    - Set `ralph_state.completed_stories` to `[]`
    - Set `ralph_state.blocked_stories` to `[]`
-3. Run `unset BUN_INSTALL && qmd update`
-4. Report:
+3. Report:
    ```
    ✓ PRD written:      {path}
    ✓ Stories:           {n} (S: {n}, M: {n})
    ✓ ralph_state:       prd_path set, mode idle
    ✓ status.md:         updated
-   ✓ QMD index:         updated
 
    Next: run /ralph to begin autonomous execution.
    ```
