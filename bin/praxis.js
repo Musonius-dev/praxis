@@ -37,7 +37,7 @@ async function install() {
   header('Praxis Harness v' + VERSION);
 
   // Ensure ~/.claude/ structure
-  for (const sub of ['rules', 'commands', 'skills']) {
+  for (const sub of ['rules', 'skills', 'hooks']) {
     fs.mkdirSync(path.join(CLAUDE_DIR, sub), { recursive: true });
   }
 
@@ -59,17 +59,6 @@ async function install() {
     ok(count + ' rules installed');
   }
 
-  // Copy base/commands/* → ~/.claude/commands/
-  const cmdsDir = path.join(PKG_DIR, 'base', 'commands');
-  if (fs.existsSync(cmdsDir)) {
-    let count = 0;
-    for (const f of fs.readdirSync(cmdsDir)) {
-      copyFile(path.join(cmdsDir, f), path.join(CLAUDE_DIR, 'commands', f));
-      count++;
-    }
-    ok(count + ' commands installed');
-  }
-
   // Copy base/skills/* → ~/.claude/skills/
   const skillsDir = path.join(PKG_DIR, 'base', 'skills');
   if (fs.existsSync(skillsDir)) {
@@ -87,6 +76,35 @@ async function install() {
     ok(count + ' skills installed');
   }
 
+  // Copy base/hooks/*.sh → ~/.claude/hooks/
+  const hooksDir = path.join(PKG_DIR, 'base', 'hooks');
+  if (fs.existsSync(hooksDir)) {
+    let count = 0;
+    for (const f of fs.readdirSync(hooksDir)) {
+      if (f.endsWith('.sh')) {
+        copyFile(path.join(hooksDir, f), path.join(CLAUDE_DIR, 'hooks', f));
+        // Make executable
+        fs.chmodSync(path.join(CLAUDE_DIR, 'hooks', f), 0o755);
+        count++;
+      }
+    }
+    ok(count + ' hooks installed');
+
+    // Merge hooks configuration into settings.json
+    const hooksConfig = path.join(hooksDir, 'settings-hooks.json');
+    const settingsFile = path.join(CLAUDE_DIR, 'settings.json');
+    if (fs.existsSync(hooksConfig)) {
+      const hooksCfg = JSON.parse(fs.readFileSync(hooksConfig, 'utf8'));
+      let settings = {};
+      if (fs.existsSync(settingsFile)) {
+        try { settings = JSON.parse(fs.readFileSync(settingsFile, 'utf8')); } catch {}
+      }
+      Object.assign(settings, hooksCfg);
+      fs.writeFileSync(settingsFile, JSON.stringify(settings, null, 2) + '\n');
+      ok('hooks configuration merged into settings.json');
+    }
+  }
+
   // Copy kits/ → ~/.claude/kits/
   const kitsDir = path.join(PKG_DIR, 'kits');
   if (fs.existsSync(kitsDir)) {
@@ -94,11 +112,29 @@ async function install() {
     ok('kits installed');
   }
 
-  // Orphan cleanup: obsidian.md renamed to vault.md
-  const legacyObsidian = path.join(CLAUDE_DIR, 'rules', 'obsidian.md');
-  if (fs.existsSync(legacyObsidian)) {
-    fs.unlinkSync(legacyObsidian);
-    ok('Removed legacy obsidian.md (renamed to vault.md)');
+  // Orphan cleanup: deleted rules and legacy files
+  const orphans = [
+    'obsidian.md', 'code-quality.md', 'security.md',
+    'communication.md', 'architecture.md'
+  ];
+  for (const f of orphans) {
+    const target = path.join(CLAUDE_DIR, 'rules', f);
+    if (fs.existsSync(target)) {
+      fs.unlinkSync(target);
+      dim('removed legacy ' + f);
+    }
+  }
+
+  // Orphan cleanup: old commands directory (v1.x)
+  const oldCmdsDir = path.join(CLAUDE_DIR, 'commands');
+  if (fs.existsSync(oldCmdsDir)) {
+    const files = fs.readdirSync(oldCmdsDir);
+    if (files.length > 0) {
+      for (const f of files) {
+        fs.unlinkSync(path.join(oldCmdsDir, f));
+      }
+      dim('cleaned up ' + files.length + ' legacy command files');
+    }
   }
 
   // Vault configuration
@@ -115,7 +151,7 @@ async function install() {
     }
 
     const config = {
-      version: '1.1.0',
+      version: VERSION,
       vault_path: vaultPath || '',
       vault_backend: 'obsidian',
       repo_path: PKG_DIR
@@ -140,7 +176,7 @@ async function install() {
   // Summary
   header('Install complete');
   console.log('  Files copied to ' + CLAUDE_DIR);
-  console.log('  Run: npx praxis-harness health');
+  console.log('  Run: npx @esoteric-logic/praxis-harness health');
   console.log('');
 }
 
@@ -177,15 +213,6 @@ function health() {
     }
   }
 
-  // Commands
-  console.log('\nCommands:');
-  const cmdsDir = path.join(PKG_DIR, 'base', 'commands');
-  if (fs.existsSync(cmdsDir)) {
-    for (const f of fs.readdirSync(cmdsDir)) {
-      check(fs.existsSync(path.join(CLAUDE_DIR, 'commands', f)), 'commands/' + f + ' installed');
-    }
-  }
-
   // Skills
   console.log('\nSkills:');
   const skillsDir = path.join(PKG_DIR, 'base', 'skills');
@@ -194,6 +221,18 @@ function health() {
       check(fs.existsSync(path.join(CLAUDE_DIR, 'skills', entry)), 'skills/' + entry + ' installed');
     }
   }
+
+  // Hooks
+  console.log('\nHooks:');
+  const hooksDir = path.join(PKG_DIR, 'base', 'hooks');
+  if (fs.existsSync(hooksDir)) {
+    for (const f of fs.readdirSync(hooksDir)) {
+      if (f.endsWith('.sh')) {
+        check(fs.existsSync(path.join(CLAUDE_DIR, 'hooks', f)), 'hooks/' + f + ' installed');
+      }
+    }
+  }
+  check(fs.existsSync(path.join(CLAUDE_DIR, 'settings.json')), 'settings.json with hooks configured');
 
   // Kits
   console.log('\nKits:');
@@ -236,34 +275,26 @@ function health() {
 function uninstall() {
   header('Uninstalling Praxis Harness');
 
-  // Remove files that came from base/
+  // Remove CLAUDE.md
   const claudeMd = path.join(CLAUDE_DIR, 'CLAUDE.md');
   if (fs.existsSync(claudeMd)) { fs.unlinkSync(claudeMd); ok('CLAUDE.md removed'); }
 
-  // Remove rules from base/rules/
+  // Remove rules
   const rulesDir = path.join(PKG_DIR, 'base', 'rules');
   if (fs.existsSync(rulesDir)) {
     for (const f of fs.readdirSync(rulesDir)) {
       const target = path.join(CLAUDE_DIR, 'rules', f);
       if (fs.existsSync(target)) fs.unlinkSync(target);
     }
-    // Also remove legacy obsidian.md if present
-    const legacyRule = path.join(CLAUDE_DIR, 'rules', 'obsidian.md');
-    if (fs.existsSync(legacyRule)) fs.unlinkSync(legacyRule);
+    // Also remove legacy files
+    for (const f of ['obsidian.md', 'code-quality.md', 'security.md', 'communication.md', 'architecture.md']) {
+      const target = path.join(CLAUDE_DIR, 'rules', f);
+      if (fs.existsSync(target)) fs.unlinkSync(target);
+    }
     ok('rules removed');
   }
 
-  // Remove commands from base/commands/
-  const cmdsDir = path.join(PKG_DIR, 'base', 'commands');
-  if (fs.existsSync(cmdsDir)) {
-    for (const f of fs.readdirSync(cmdsDir)) {
-      const target = path.join(CLAUDE_DIR, 'commands', f);
-      if (fs.existsSync(target)) fs.unlinkSync(target);
-    }
-    ok('commands removed');
-  }
-
-  // Remove skills from base/skills/
+  // Remove skills
   const skillsDir = path.join(PKG_DIR, 'base', 'skills');
   if (fs.existsSync(skillsDir)) {
     for (const entry of fs.readdirSync(skillsDir)) {
@@ -275,11 +306,29 @@ function uninstall() {
     ok('skills removed');
   }
 
+  // Remove hooks
+  const hooksDir = path.join(CLAUDE_DIR, 'hooks');
+  if (fs.existsSync(hooksDir)) {
+    for (const f of fs.readdirSync(hooksDir)) {
+      if (f.endsWith('.sh')) {
+        fs.unlinkSync(path.join(hooksDir, f));
+      }
+    }
+    ok('hooks removed');
+  }
+
   // Remove kits
   const kitsTarget = path.join(CLAUDE_DIR, 'kits');
   if (fs.existsSync(kitsTarget)) {
     fs.rmSync(kitsTarget, { recursive: true, force: true });
     ok('kits removed');
+  }
+
+  // Remove legacy commands directory
+  const oldCmdsDir = path.join(CLAUDE_DIR, 'commands');
+  if (fs.existsSync(oldCmdsDir)) {
+    fs.rmSync(oldCmdsDir, { recursive: true, force: true });
+    ok('legacy commands directory removed');
   }
 
   header('Uninstall complete');
@@ -294,10 +343,10 @@ function printHelp() {
   console.log(`
 praxis-harness v${VERSION}
 
-Usage: npx praxis-harness [command]
+Usage: npx @esoteric-logic/praxis-harness [command]
 
 Commands:
-  install     Copy rules, commands, skills, and kits to ~/.claude/ (default)
+  install     Copy rules, skills, hooks, and kits to ~/.claude/ (default)
   update      Re-copy from latest npm package version
   health      Verify install integrity
   uninstall   Remove Praxis-owned files from ~/.claude/
