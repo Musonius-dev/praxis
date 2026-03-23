@@ -1,10 +1,7 @@
 ---
 name: code-gc
 disable-model-invocation: true
-description: Detect code entropy in the current repo. Dead code, test debt, stale
-  TODOs, oversized functions, commented-out blocks, unused deps. Two modes:
-  lightweight (called by session-retro) and full audit (manual /code-gc).
-  Never auto-deletes or auto-fixes. Side-effect skill — never auto-triggers.
+description: "Detect code entropy in the current repo: dead code, test debt, stale TODOs, oversized functions, commented-out blocks, unused deps. Two modes: lightweight (called by session-retro) and full audit (manual /code-gc). Never auto-deletes or auto-fixes."
 ---
 
 # code-gc Skill
