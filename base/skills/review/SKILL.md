@@ -28,6 +28,7 @@ Ask: "Review staged changes, last commit, or specific SHA?"
   - Any file → `~/.claude/rules/coding.md`
 
 **Step 4 — Launch subagent review**
+Follow the subagent dispatch protocol (see `/subagent` skill for reference).
 Launch a subagent with ONLY these inputs (zero conversation history):
 - The diff
 - The SPEC (if available from Step 3)

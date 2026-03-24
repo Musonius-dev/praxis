@@ -35,6 +35,7 @@ Determine what to simplify:
 
 ## Phase 2 — Launch Subagent
 
+Follow the subagent dispatch protocol (see `/subagent` skill for reference).
 Launch a subagent with ONLY these inputs (zero conversation history):
 
 ```

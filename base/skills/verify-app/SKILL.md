@@ -76,6 +76,7 @@ For each item in the plan's `## Done When`:
 
 ## Phase 3 — Regression Check
 
+Follow the subagent dispatch protocol (see `/subagent` skill for reference).
 Launch a subagent with zero conversation history:
 
 ```

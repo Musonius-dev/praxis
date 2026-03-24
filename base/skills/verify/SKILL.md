@@ -69,12 +69,11 @@ After self-review passes, write phase summary:
 - `/simplify` runs after UNIFY, before shipping. It is the quality gate between "it works" and "it's clean".
 
 **Step 4 — On FAIL (Stop-and-Fix)**
-1. Identify the failure: exact error, file, line
-2. Fix NOW. Do not proceed to the next milestone.
-3. Re-run the full validation sequence (Step 1)
-4. If still failing after 3 attempts: STOP.
-   Report: **What** (full error + 3 attempts) → **So What** (root cause) → **Now What** (next steps)
-5. Write failure details to the active plan file if >1 attempt was needed
+Run `/repair` — it handles the structured fix-and-verify loop:
+- Captures the failure, classifies root cause, attempts up to 3 fixes
+- Re-runs validation after each attempt
+- STOPs with What/So What/Now What after 3 failures
+- Writes repair trace and learnings to vault
 
 **Rules:**
 - Never say "tests pass" without showing output.

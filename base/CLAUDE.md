@@ -81,7 +81,13 @@ Registered via `claude mcp add`. Persist globally across sessions.
 | context7 | Live library/API docs | None |
 | github | Repo operations, PRs, issues | `GITHUB_PERSONAL_ACCESS_TOKEN` |
 
-Optional: `perplexity` (AI web search). Run `bash scripts/onboard-mcp.sh perplexity` to add.
+**Optional servers** — enhance but don't require Praxis:
+
+| Server | Purpose | Install | Degrades without |
+|--------|---------|---------|-----------------|
+| perplexity | AI web search | `bash scripts/onboard-mcp.sh perplexity` | No web research in `/discover` |
+| filesystem | Direct vault file access | `claude mcp add filesystem` | Uses shell for vault reads |
+| sequential-thinking | Multi-step reasoning | `claude mcp add sequential-thinking` | Standard reasoning only |
 
 Check: `claude mcp list` | Manage: `bash scripts/onboard-mcp.sh [server|all]`
 Missing servers are non-blocking — features degrade gracefully.
@@ -116,6 +122,9 @@ Kits activate via `/kit:<n>` slash command. Kits are idempotent — double-activ
 |-----|----------|--------|
 | web-designer | `/kit:web-designer` | Design system → components → accessibility → production lint |
 | infrastructure | `/kit:infrastructure` | Terraform → Azure → GitHub Actions → compliance |
+| api | `/kit:api` | RESTful conventions → OpenAPI specs → contract testing |
+| security | `/kit:security` | Threat modeling → IAM review → OWASP audit |
+| data | `/kit:data` | Schema design → migration planning → query optimization |
 
 Kit manifests live in `~/.claude/kits/<name>/KIT.md`.
 
