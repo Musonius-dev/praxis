@@ -82,6 +82,18 @@ ls -la {vault_path}/plans/
 stat -f "%Sm" {vault_path}/status.md
 ```
 
+## Memory Hygiene — Conventions (WARN on violation)
+
+### Before starting a new kit or major task
+1. Run `/dream` (if available) to consolidate stale auto-memory
+2. Run `/sync-memory` to bridge durable insights to Obsidian vault
+3. Proceed with clean, consolidated context
+
+### MEMORY.md cap
+- Keep under 80 lines. Auto-dream and `/sync-memory` enforce this.
+- If MEMORY.md exceeds 80 lines: run `/sync-memory` before continuing.
+- See `~/.claude/rules/memory-boundary.md` for full boundary rules.
+
 ---
 
 ## Removal Condition

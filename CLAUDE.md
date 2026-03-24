@@ -74,6 +74,11 @@ format: # N/A — no formatter configured
 
 ## Project-Specific Rules
 
+## Memory
+Keep MEMORY.md under 80 lines. Use topic files for overflow.
+Prefer linking to Obsidian vault notes over expanding MEMORY.md.
+Run `/sync-memory` when MEMORY.md exceeds 80 lines.
+
 ## After Compaction — Bootstrap Sequence
 
 **Step 1** — Read this file top to bottom first.

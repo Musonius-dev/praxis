@@ -130,7 +130,7 @@ Kit manifests live in `~/.claude/kits/<name>/KIT.md`.
 
 ## Rules Registry — Load on Demand Only
 
-### Universal — always active (6 rules)
+### Universal — always active (7 rules)
 | File | Purpose |
 |------|---------|
 | `~/.claude/rules/profile.md` | Who the user is, identities, working style |
@@ -139,6 +139,7 @@ Kit manifests live in `~/.claude/kits/<name>/KIT.md`.
 | `~/.claude/rules/git-workflow.md` | Commits, branches, identity verification, pre-commit checks |
 | `~/.claude/rules/vault.md` | Second brain integration — vault backend, file purposes |
 | `~/.claude/rules/context-management.md` | Context anti-rot, phase scoping, context reset protocol |
+| `~/.claude/rules/memory-boundary.md` | Auto-memory boundary, MEMORY.md cap, dream integration |
 
 ### Scoped — load only when paths match
 | File | Loads when |
