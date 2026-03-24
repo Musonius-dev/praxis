@@ -17,16 +17,18 @@ Praxis gives Claude Code a three-layer operating system:
 ## Quick start
 
 ```bash
-npx praxis-harness
+npx @esoteric-logic/praxis-harness@latest
 ```
 
 One command. Copies rules, commands, skills, and kits directly into `~/.claude/`. Node.js 18+ must be installed first.
 
+> **Always use `@latest`** — `npx` caches packages locally. Without `@latest`, you may get a stale version on machines that installed previously.
+
 **Subsequent commands:**
 ```bash
-npx praxis-harness update      # re-copy from latest npm version
-npx praxis-harness health      # verify install integrity
-npx praxis-harness uninstall   # remove Praxis-owned files from ~/.claude/
+npx @esoteric-logic/praxis-harness@latest update      # re-copy from latest npm version
+npx @esoteric-logic/praxis-harness@latest health      # verify install integrity
+npx @esoteric-logic/praxis-harness@latest uninstall   # remove Praxis-owned files from ~/.claude/
 ```
 
 ## After install
@@ -167,18 +169,20 @@ Praxis auto-documents your work in the vault with zero manual effort. Two indepe
 ### Updating the harness
 
 ```bash
-npx praxis-harness update
+npx @esoteric-logic/praxis-harness@latest update
 ```
 
 Re-copies all hooks, skills, rules, and kits from the latest npm package version. Config file is preserved.
+
+> **Always use `@latest`** to avoid `npx` serving a cached older version.
 
 ### Updating existing projects
 
 After a harness update that adds new vault files (like `decision-log.md`), run `/scaffold-exist` in a Claude Code session to audit your vault and add any missing files. This is non-destructive — it never overwrites existing content.
 
 ```
-Step 1: npx praxis-harness update     → deploys new hooks, skills, rules to ~/.claude/
-Step 2: /scaffold-exist                → audits vault, adds missing files
+Step 1: npx @esoteric-logic/praxis-harness@latest update   → deploys new hooks, skills, rules
+Step 2: /scaffold-exist                                      → audits vault, adds missing files
 ```
 
 New projects get everything automatically via `/scaffold-new`.
@@ -186,7 +190,7 @@ New projects get everything automatically via `/scaffold-new`.
 ## Uninstalling
 
 ```bash
-npx praxis-harness uninstall
+npx @esoteric-logic/praxis-harness@latest uninstall
 ```
 
 Removes all Praxis-owned files from `~/.claude/`. Does not delete config, vault templates, or installed plugins.
