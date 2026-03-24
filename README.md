@@ -74,11 +74,14 @@ For technical research: `/discover` (structured options evaluation before decisi
 | `verify-app` | End-to-end verification with regression analysis |
 | `session-retro` | End-of-session retrospective with learnings extraction |
 | `status-update` | Manual vault status.md update |
+| `repair` | Structured 3-attempt fix-and-verify loop for failed milestones |
+| `sync-memory` | Bridge auto-memory insights to Obsidian vault |
+| `context-probe` | Assess context health and recommend action |
 | `context-reset` | Reload context from vault without clearing session |
 
 ## Rules
 
-15 rules across universal and scoped categories. Universal rules load every session. Scoped rules load only when matching file patterns are detected.
+16 rules across universal and scoped categories. Universal rules load every session. Scoped rules load only when matching file patterns are detected.
 
 Key additions in this version:
 - **context-management** — context brackets (FRESH/MODERATE/DEPLETED/CRITICAL) adapt behavior to session stage
@@ -113,6 +116,9 @@ Key additions in this version:
 |-----|----------|-------------|
 | web-designer | `/kit:web-designer` | Design system init → component build → accessibility audit → production lint |
 | infrastructure | `/kit:infrastructure` | Terraform plan → apply → drift detection → compliance check |
+| api | `/kit:api` | RESTful conventions → OpenAPI specs → contract testing |
+| security | `/kit:security` | Threat modeling → IAM review → OWASP audit |
+| data | `/kit:data` | Schema design → migration planning → query optimization |
 
 More kits coming. See `docs/creating-a-kit.md` to build your own.
 
@@ -204,6 +210,12 @@ bash install.sh
 ```
 
 The git-clone + `install.sh` path uses symlinks instead of copies, so edits in the repo are immediately reflected.
+
+**Testing:**
+```bash
+bash scripts/lint-harness.sh .     # structure, frontmatter, placeholders, registry
+bash scripts/test-harness.sh .     # shellcheck, JSON, cross-skill refs, hook wiring, kit structure
+```
 
 ## Requirements
 
