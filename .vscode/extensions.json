@@ -1,6 +1,5 @@
 {
   "recommendations": [
-    "chrischinchilla.vale-vscode",
     "timonwong.shellcheck",
     "editorconfig.editorconfig",
     "davidanson.vscode-markdownlint"

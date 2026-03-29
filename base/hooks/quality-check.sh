@@ -103,10 +103,11 @@ case "$EXT" in
     fi
     ;;
   md)
-    if command -v vale &>/dev/null; then
-      LINT_OUT=$(vale --output=line "$FILE_PATH" 2>&1) || true
+    # Markdown linting handled by markdownlint if available
+    if command -v markdownlint &>/dev/null; then
+      LINT_OUT=$(markdownlint "$FILE_PATH" 2>&1) || true
       if [ -n "$LINT_OUT" ]; then
-        ISSUES+=("vale: $LINT_OUT")
+        ISSUES+=("markdownlint: $LINT_OUT")
       fi
     fi
     ;;

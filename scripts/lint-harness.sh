@@ -124,7 +124,7 @@ while IFS= read -r file; do
     | grep -vE '`[^`]*\{[^}]+\}[^`]*`' \
     | grep -vE '^[0-9]+:\s*#' \
     | grep -vE '^[0-9]+:\s*echo ' \
-    | grep -vE '\{vault_path\}|\{today_date\}|\{project-slug\}|\{YYYY-MM-DD\}|\{kebab-title\}|\{date\}|\{[nN]\}|\{1-line\}|\{ISO timestamp\}|\{repo_root\}|\{identity_email\}|\{stack\}|\{placeholder\}|\{placeholders\}|\{http_code\}' \
+    | grep -vE '\{vault_path\}|\{today_date\}|\{project-slug\}|\{YYYY-MM-DD\}|\{kebab-title\}|\{date\}|\{[nN]\}|\{1-line\}|\{ISO timestamp\}|\{repo_root\}|\{identity_email\}|\{stack\}|\{placeholder\}|\{placeholders\}|\{http_code\}|\$\{[A-Z_]+\}|\$[a-z_]+' \
     || true)
   if [[ -n "$matches" ]]; then
     rel_path="${file#"$REPO_PATH"/}"

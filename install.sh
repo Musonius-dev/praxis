@@ -80,6 +80,15 @@ detect_platform() {
 detect_platform
 ok "$PLATFORM detected"
 
+# ─── Create ~/.praxis/ secure directory ───
+if [[ ! -d "$HOME/.praxis" ]]; then
+  mkdir -p "$HOME/.praxis"
+  chmod 700 "$HOME/.praxis"
+  ok "Created $HOME/.praxis/ (secure storage)"
+else
+  ok "$HOME/.praxis/ exists"
+fi
+
 # ─── Homebrew (macOS only) ───
 if [[ "$PLATFORM" == "darwin" ]]; then
   if ! command -v brew &>/dev/null; then
@@ -454,9 +463,8 @@ fi
 # ═══════════════════════════════════════════
 step "Phase 4c: Quality tools (optional)"
 
-echo "  Quality tools enhance Praxis linting and prose checking:"
+echo "  Quality tools enhance Praxis linting:"
 echo "    • shellcheck  — shell script linter"
-echo "    • vale        — prose linter"
 echo "    • commitlint  — commit message format"
 echo ""
 read -rp "  Install quality tools? [y/N] " INSTALL_TOOLS
@@ -635,6 +643,12 @@ if [[ -f "$PRAXIS_DIR/scripts/health-check.sh" ]]; then
   echo ""
   step "Running health check..."
   bash "$PRAXIS_DIR/scripts/health-check.sh" || warn "Health check had failures — review above"
+fi
+
+if [[ -x "$PRAXIS_DIR/bin/praxis-preflight.sh" ]]; then
+  echo ""
+  step "Running preflight check..."
+  bash "$PRAXIS_DIR/bin/praxis-preflight.sh" || warn "Preflight had blocking failures — run 'praxis doctor' to review"
 fi
 
 # ═══════════════════════════════════════════

@@ -65,7 +65,7 @@ test:   # fill in as project develops
 lint:   # fill in as project develops
 build:  # fill in as project develops
 format: # fill in as project develops
-prose:  vale .
+prose:  # fill in as project develops
 ```
 
 ## Thresholds

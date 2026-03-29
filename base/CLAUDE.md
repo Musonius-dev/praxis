@@ -134,7 +134,7 @@ Kit manifests live in `~/.claude/kits/<name>/KIT.md`.
 
 ## Rules Registry — Load on Demand Only
 
-### Universal — always active (7 rules)
+### Universal — always active (8 rules)
 | File | Purpose |
 |------|---------|
 | `~/.claude/rules/profile.md` | Who the user is, identities, working style |
@@ -144,6 +144,7 @@ Kit manifests live in `~/.claude/kits/<name>/KIT.md`.
 | `~/.claude/rules/vault.md` | Second brain integration — vault backend, file purposes |
 | `~/.claude/rules/context-management.md` | Context anti-rot, phase scoping, context reset protocol |
 | `~/.claude/rules/memory-boundary.md` | Auto-memory boundary, MEMORY.md cap, dream integration |
+| `~/.claude/rules/security-posture.md` | Sandbox model, credential protection, protected paths |
 
 ### Scoped — load only when paths match
 | File | Loads when |
@@ -152,9 +153,24 @@ Kit manifests live in `~/.claude/kits/<name>/KIT.md`.
 | `~/.claude/rules/terraform.md` | `**/*.tf`, `**/*.tfvars` |
 | `~/.claude/rules/github-actions.md` | `.github/workflows/**` |
 | `~/.claude/rules/powershell.md` | `**/*.ps1`, `**/*.psm1` |
+| `~/.claude/rules/dependency-freshness.md` | `package.json`, `go.mod`, `requirements.txt`, `Cargo.toml`, `pyproject.toml` |
+| `~/.claude/rules/live-docs-required.md` | Dependency manifests, files importing external packages |
 
 ### Auto-invocable skills (replace former universal rules)
 | Skill | Triggers when |
 |-------|--------------|
 | `communication-standards` | Writing client-facing docs, proposals, status reports, commits, PRs |
 | `architecture-patterns` | Writing ADRs, specs, system design, risk docs, blocker reports |
+
+## Judgment & Research Commands
+
+| Command | Purpose |
+|---------|---------|
+| `/duel` | Parallel Alpha/Beta implementation → blind scoring → synthesis |
+| `/deliberate` | Multi-perspective decision analysis with scored option matrix |
+| `/freshness` | Full dependency audit — CVEs, outdated packages, maintenance status |
+| `/research <pkg>` | Live docs (Context7) + CVE/version/maintenance check (Perplexity Sonar) |
+
+MCP server templates: `base/configs/mcp-servers.json` — declarative config for context7, github, perplexity-sonar.
+Dependency registry: `base/configs/registry.json` — single source of truth for all tools, auth, hooks.
+Preflight gate: `bin/praxis-preflight.sh` (alias: `praxis doctor`) — verifies auth, tools, MCP, keys.

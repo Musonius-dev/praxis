@@ -27,6 +27,15 @@
             "command": "bash ~/.claude/hooks/identity-check.sh"
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/credential-guard.sh"
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -36,6 +45,15 @@
           {
             "type": "command",
             "command": "bash ~/.claude/hooks/quality-check.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/dep-audit.sh"
           }
         ]
       }

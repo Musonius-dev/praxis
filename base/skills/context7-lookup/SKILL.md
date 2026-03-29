@@ -20,7 +20,7 @@ needs documentation lookup.
 
 **Step 2 — Resolve library ID**
 Use the Context7 MCP tool `resolve-library-id`:
-- Input: library name (e.g., "react", "express", "terraform azurerm")
+- Input: library name (for example: `react`, `express`, `Terraform azurerm`)
 - Output: resolved library ID for querying
 
 **Step 3 — Query documentation**
@@ -35,12 +35,23 @@ Use the documentation output as the authoritative source for:
 - Configuration options
 - Return types and error cases
 
-## When Context7 Is Unavailable
+## Perplexity Sonar Fallback
 
-If the MCP server is not running or returns an error:
-1. State that docs could not be verified
-2. Flag the specific method/API as "unverified against current version"
-3. Proceed with best-knowledge implementation but mark it for review
+When Context7 returns no results or insufficient results for a library:
+1. Use `perplexity_search` with query: `"[library] official documentation site:docs.[domain] OR site:github.com"`
+2. Use the returned URL and content as the documentation source
+3. State in output: "Context7 had no index for [library] — sourced from [URL] via Sonar"
+
+When Context7 is completely unavailable (MCP server not running):
+1. State that docs could not be verified via Context7
+2. Fall back to Perplexity Sonar for documentation lookup if available
+3. If both are unavailable: flag the specific method/API as "unverified against current version"
+4. Proceed with best-knowledge implementation but mark it for review
+
+For comprehensive research including CVEs, version verification, and maintenance status,
+use `/research <package>` instead — it chains both tools into a full audit.
+
+See `~/.claude/rules/live-docs-required.md` for the complete Context7 + Perplexity protocol.
 
 ## What NOT to Look Up
 

@@ -24,9 +24,6 @@ Thumbs.db
 *.swo
 *~
 
-# Vale (downloaded by vale sync)
-.vale-styles/
-
 # Build artifacts from old project
 __pycache__/
 *.egg-info/

@@ -1,0 +1,113 @@
+{
+  "version": "2.0",
+  "auth": {
+    "claude": {
+      "check": "claude auth status",
+      "fix": "claude auth login",
+      "blocking": true,
+      "description": "Claude Code OAuth — browser login, no API key needed"
+    },
+    "github": {
+      "check": "gh auth status",
+      "fix": "gh auth login",
+      "fallback_env": "GITHUB_TOKEN",
+      "auto_populate": "gh auth token",
+      "blocking": false,
+      "feature": "github-mcp"
+    }
+  },
+  "binaries": {
+    "required": [
+      {"name": "claude", "minVersion": "1.0.0", "install": "npm install -g @anthropic-ai/claude-code"},
+      {"name": "node", "minVersion": "18.0.0", "install": "brew install node"},
+      {"name": "npm", "minVersion": "9.0.0", "install": "npm install -g npm@latest"},
+      {"name": "git", "minVersion": "2.30.0", "install": "brew install git"},
+      {"name": "jq", "minVersion": "1.6", "install": "brew install jq"},
+      {"name": "gh", "minVersion": "2.0.0", "install": "brew install gh"}
+    ],
+    "optional": [
+      {"name": "trufflehog", "feature": "secret-scanning", "install": "brew install trufflehog"},
+      {"name": "gitleaks", "feature": "secret-scanning", "install": "brew install gitleaks"},
+      {"name": "osv-scanner", "feature": "dep-audit", "install": "go install github.com/google/osv-scanner/cmd/osv-scanner@latest"},
+      {"name": "pip-audit", "feature": "dep-audit-python", "install": "pip install pip-audit"},
+      {"name": "docker", "feature": "docker-sandbox", "install": "brew install --cask docker"}
+    ]
+  },
+  "env_vars": {
+    "optional": [
+      {
+        "name": "PERPLEXITY_API_KEY",
+        "description": "Perplexity Sonar — live CVE lookups, dep research",
+        "validation": "starts_with:pplx-",
+        "secure_store": true,
+        "masked_preview": 8,
+        "feature": "live-research",
+        "get_key_url": "https://www.perplexity.ai/settings/api"
+      },
+      {
+        "name": "GITHUB_TOKEN",
+        "description": "Auto-populated from gh auth token — for GitHub MCP",
+        "validation": "starts_with:gh",
+        "secure_store": true,
+        "masked_preview": 8,
+        "feature": "github-mcp",
+        "auto_populate": "gh auth token"
+      },
+      {
+        "name": "OBSIDIAN_VAULT",
+        "description": "Absolute path to Obsidian vault for long-term memory",
+        "validation": "is_directory",
+        "secure_store": false,
+        "feature": "obsidian-memory"
+      }
+    ]
+  },
+  "git_config": {
+    "required": [
+      {"key": "user.name", "description": "git commit author name"},
+      {"key": "user.email", "description": "git commit author email"}
+    ]
+  },
+  "mcp_servers": [
+    {
+      "name": "context7",
+      "package": "@upstash/context7-mcp@latest",
+      "requires_env": [],
+      "zero_config": true,
+      "feature": "live-docs"
+    },
+    {
+      "name": "github",
+      "package": "@modelcontextprotocol/server-github",
+      "requires_env": ["GITHUB_TOKEN"],
+      "feature": "github-mcp"
+    },
+    {
+      "name": "perplexity-sonar",
+      "package": "mcp-perplexity-server",
+      "requires_env": ["PERPLEXITY_API_KEY"],
+      "env_config": {"PERPLEXITY_MODEL": "sonar-pro"},
+      "feature": "live-research"
+    }
+  ],
+  "hooks": {
+    "required": [
+      {"path": "base/hooks/secret-scan.sh", "event": "PreToolUse", "matcher": "Write|Edit|MultiEdit"},
+      {"path": "base/hooks/file-guard.sh", "event": "PreToolUse", "matcher": "Write|Edit|MultiEdit"},
+      {"path": "base/hooks/identity-check.sh", "event": "PreToolUse", "matcher": "Bash"},
+      {"path": "base/hooks/credential-guard.sh", "event": "PreToolUse", "matcher": "Bash"},
+      {"path": "base/hooks/quality-check.sh", "event": "PostToolUse", "matcher": "Write|Edit|MultiEdit"},
+      {"path": "base/hooks/session-data-collect.sh", "event": "Stop", "matcher": ""}
+    ],
+    "optional": [
+      {"path": "base/hooks/recursion-guard.sh", "event": "PreToolUse", "matcher": "", "feature": "recursion-detection"},
+      {"path": "base/hooks/dep-audit.sh", "event": "PostToolUse", "matcher": "Write|Edit|MultiEdit", "feature": "dep-audit"}
+    ]
+  },
+  "claude_settings": {
+    "required": [
+      {"path": "sandbox.failIfUnavailable", "expected": true},
+      {"path": "sandbox.allowUnsandboxedCommands", "expected": false}
+    ]
+  }
+}

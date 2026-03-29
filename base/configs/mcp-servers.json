@@ -1,0 +1,26 @@
+{
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"],
+      "description": "Real-time library documentation — always use before generating code that touches any npm/PyPI/crate dependency"
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}"
+      },
+      "description": "GitHub MCP — issues, PRs, repos. Token auto-set from gh auth."
+    },
+    "perplexity-sonar": {
+      "command": "npx",
+      "args": ["-y", "mcp-perplexity-server"],
+      "env": {
+        "PERPLEXITY_API_KEY": "${PERPLEXITY_API_KEY}",
+        "PERPLEXITY_MODEL": "sonar-pro"
+      },
+      "description": "Web search for CVEs, changelogs, security advisories. Default sonar-pro. Override per-call: sonar (fast), sonar-reasoning (/deliberate only)."
+    }
+  }
+}

@@ -44,12 +44,12 @@ install_go()   { go install "$@" 2>/dev/null || true; }
 # ── Core (always) ──
 echo "── Installing core tools ──"
 if [ "$PKG" = "brew" ]; then
-  install_brew shellcheck shfmt jq vale gitleaks
+  install_brew shellcheck shfmt jq gitleaks
 else
   sudo apt-get update -qq
   sudo apt-get install -y -qq shellcheck jq
   install_go mvdan.cc/sh/v3/cmd/shfmt@latest
-  echo "NOTE: Install vale and gitleaks manually (see https://vale.sh/docs/install)"
+  echo "NOTE: Install gitleaks manually (see https://github.com/gitleaks/gitleaks)"
 fi
 install_npm markdownlint-cli @commitlint/cli @commitlint/config-conventional
 install_pip semgrep yamllint
@@ -87,31 +87,11 @@ if command -v docker &>/dev/null; then
   fi
 fi
 
-# ── Vale setup (sync packages + copy Praxis rules) ──
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-VALE_CONFIG_DIR="$SCRIPT_DIR/../base/configs/vale"
-if command -v vale &>/dev/null && [ -f "$VALE_CONFIG_DIR/.vale.ini" ]; then
-  echo ""
-  echo "── Setting up Vale prose linter ──"
-  (cd "$VALE_CONFIG_DIR" && vale sync 2>/dev/null || true)
-  if [ -d "$VALE_CONFIG_DIR/Praxis" ] && [ -d "$VALE_CONFIG_DIR/.vale-styles" ]; then
-    cp -R "$VALE_CONFIG_DIR/Praxis" "$VALE_CONFIG_DIR/.vale-styles/Praxis"
-    echo "  Praxis rules copied to .vale-styles/"
-    # Copy vocabulary files to Vale's expected location
-    if [ -d "$VALE_CONFIG_DIR/Praxis/vocabularies" ]; then
-      mkdir -p "$VALE_CONFIG_DIR/.vale-styles/config/vocabularies/Praxis"
-      cp "$VALE_CONFIG_DIR/Praxis/vocabularies/"*.txt "$VALE_CONFIG_DIR/.vale-styles/config/vocabularies/Praxis/"
-      echo "  Praxis vocabulary copied to .vale-styles/config/vocabularies/"
-    fi
-  fi
-fi
-
 # ── VS Code extensions ──
 if command -v code &>/dev/null; then
   echo ""
   echo "── Installing VS Code extensions ──"
   CORE_EXTENSIONS=(
-    chrischinchilla.vale-vscode
     timonwong.shellcheck
     editorconfig.editorconfig
     davidanson.vscode-markdownlint
@@ -134,7 +114,7 @@ echo ""
 echo "=== Done. Run 'bash scripts/install-tools.sh --all' to install all stacks. ==="
 echo ""
 echo "Installed tools:"
-for tool in shellcheck shfmt jq vale gitleaks goimports golangci-lint govulncheck tflint trivy infracost hadolint semgrep yamllint markdownlint commitlint; do
+for tool in shellcheck shfmt jq gitleaks goimports golangci-lint govulncheck tflint trivy infracost hadolint semgrep yamllint markdownlint commitlint; do
   if command -v "$tool" &>/dev/null; then
     printf "  ✓ %s\n" "$tool"
   else

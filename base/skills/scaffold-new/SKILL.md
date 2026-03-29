@@ -139,9 +139,7 @@ Based on the detected tech stack from Phase 1, copy relevant configs from `base/
 | Shell scripts | `.shellcheckrc` |
 | Dockerfile | `.hadolint.yaml` |
 | Terraform | `.tflint.hcl` |
-| Any | `.vale.ini`, `.vale-styles/Praxis/*` (all rule files), `.editorconfig`, `commitlint.config.js` |
-
-After copying Vale configs: run `vale sync` to download community packages (Microsoft, write-good, Readability).
+| Any | `.editorconfig`, `commitlint.config.js` |
 
 ---
 
@@ -154,7 +152,6 @@ If yes:
 
 | Always | Extension ID |
 |--------|-------------|
-| Vale | `chrischinchilla.vale-vscode` |
 | ShellCheck | `timonwong.shellcheck` |
 | EditorConfig | `editorconfig.editorconfig` |
 | markdownlint | `davidanson.vscode-markdownlint` |

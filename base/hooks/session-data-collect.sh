@@ -102,4 +102,7 @@ if command -v jq &>/dev/null && [[ -f "$PROGRESS_FILE" ]]; then
   fi
 fi
 
+# Clean up recursion guard state files from this session
+rm -f /tmp/praxis-recursion-*.json 2>/dev/null || true
+
 exit 0

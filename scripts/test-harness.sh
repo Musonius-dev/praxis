@@ -204,36 +204,11 @@ echo "Config directory:"
 
 if [[ -d "$REPO_PATH/base/configs" ]]; then
   ok "base/configs/ exists"
-  for config_dir in vale linters; do
+  for config_dir in linters; do
     if [[ -d "$REPO_PATH/base/configs/$config_dir" ]]; then
       ok "base/configs/$config_dir/ exists"
     else
       error "base/configs/$config_dir/ missing"
-    fi
-  done
-
-  # Vale config check
-  if [[ -f "$REPO_PATH/base/configs/vale/.vale.ini" ]]; then
-    ok "vale config exists"
-  else
-    error "vale config missing"
-  fi
-
-  # Vale rule files
-  VALE_COUNT=$(find "$REPO_PATH/base/configs/vale/Praxis" -name "*.yml" 2>/dev/null | wc -l | tr -d ' ')
-  if [[ "$VALE_COUNT" -ge 6 ]]; then
-    ok "vale Praxis rules: $VALE_COUNT files"
-  else
-    error "vale Praxis rules: expected >=6, found $VALE_COUNT"
-  fi
-
-  # YAML validation on vale rules
-  for f in "$REPO_PATH"/base/configs/vale/Praxis/*.yml; do
-    name=$(basename "$f")
-    if python3 -c "import yaml; yaml.safe_load(open('$f'))" 2>/dev/null; then
-      ok "vale/$name valid YAML"
-    else
-      error "vale/$name invalid YAML"
     fi
   done
 else

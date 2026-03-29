@@ -36,7 +36,7 @@ Out of scope:
 
 1. Read `{repo_root}/CLAUDE.md` → extract `{identity_email}` and `{stack}`
 2. Detect stack from repo: `git ls-files | grep -E "\.(tf|ps1|yml|py|ts|sh|go)$" | sed 's/.*\.//' | sort -u`
-3. Check tool availability: tflint, trivy, actionlint, ruff, mypy, terraform, shellcheck, golangci-lint, semgrep, hadolint, govulncheck, infracost, vale, markdownlint, gitleaks, commitlint
+3. Check tool availability: tflint, trivy, actionlint, ruff, mypy, terraform, shellcheck, golangci-lint, semgrep, hadolint, govulncheck, infracost, markdownlint, gitleaks, commitlint
 
 ## Phase 1 — Generate Hook
 
@@ -59,8 +59,7 @@ Append stack sections based on detected flags:
   - `trivy config` on staged Dockerfiles (if trivy available)
 - **Dependencies** (if applicable):
   - `govulncheck ./...` (if go.mod exists and govulncheck available)
-- **Markdown** (if tools available):
-  - `vale` on staged .md files
+- **Markdown** (if markdownlint available):
   - `markdownlint` on staged .md files
 
 ### Commit Message Hook
