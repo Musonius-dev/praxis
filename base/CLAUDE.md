@@ -56,6 +56,13 @@ Vault path and backend are machine-specific. Read from `~/.claude/praxis.config.
 If config file is missing: tell the user to run `praxis/install.sh`.
 All `{vault_path}` references in rules and skills resolve from this config.
 
+## Model & Context Policy
+- Default model: `claude-opus-4-6` (set `ANTHROPIC_MODEL` in shell profile)
+- Sub-agents spawned by Praxis skills: use `haiku` for polling, search, and lint tasks
+- Compact trigger: when context approaches ceiling, finish the current milestone first
+- Never compact mid-plan — complete the milestone, write phase summary to vault, then compact
+- After compaction: re-bootstrap from § After Compaction below, re-run quality checks fresh
+
 ## Durable Memory
 Context is volatile. Files are permanent. Act accordingly.
 
@@ -164,6 +171,7 @@ Kit manifests live in `~/.claude/kits/<name>/KIT.md`.
 | `~/.claude/rules/powershell.md` | `**/*.ps1`, `**/*.psm1` |
 | `~/.claude/rules/dependency-freshness.md` | `package.json`, `go.mod`, `requirements.txt`, `Cargo.toml`, `pyproject.toml` |
 | `~/.claude/rules/live-docs-required.md` | Dependency manifests, files importing external packages |
+| `~/.claude/rules/desktop-protocol.md` | Claude Desktop ↔ Claude Code handoff sessions |
 
 ### Auto-invocable skills (replace former universal rules)
 | Skill | Triggers when |

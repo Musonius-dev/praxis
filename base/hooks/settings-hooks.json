@@ -68,6 +68,17 @@
         ]
       }
     ],
+    "StopFailure": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/on-stop-failure.sh"
+          }
+        ]
+      }
+    ],
     "PreCompact": [
       {
         "matcher": "",

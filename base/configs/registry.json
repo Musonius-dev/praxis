@@ -101,7 +101,8 @@
       {"path": "base/hooks/file-guard.sh", "event": "PreToolUse", "matcher": "Write|Edit|MultiEdit"},
       {"path": "base/hooks/identity-check.sh", "event": "PreToolUse", "matcher": "Bash"},
       {"path": "base/hooks/credential-guard.sh", "event": "PreToolUse", "matcher": "Bash"},
-      {"path": "base/hooks/session-data-collect.sh", "event": "Stop", "matcher": ""}
+      {"path": "base/hooks/session-data-collect.sh", "event": "Stop", "matcher": ""},
+      {"path": "base/hooks/on-stop-failure.sh", "event": "StopFailure", "matcher": ""}
     ],
     "optional": [
       {"path": "base/hooks/recursion-guard.sh", "event": "PreToolUse", "matcher": "", "feature": "recursion-detection"},
