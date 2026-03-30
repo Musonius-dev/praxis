@@ -1,7 +1,7 @@
 # Code Excellence — Core Principles
 
-Load this skill at the start of every session. These principles shape how you reason about
-code before writing a single character. They are not a checklist — they are a worldview.
+These principles shape how you reason about code before writing a single character.
+They are not a checklist — they are a worldview. They are always active.
 
 ## The Prime Directive
 Write code that the next engineer will thank you for.
@@ -20,6 +20,13 @@ Before adding any abstraction, answer all three:
 - If removed, does anything break that exists today?
 - Would a new engineer understand the code FASTER with this abstraction than without it?
 If any answer is no — do not add it. Inline the logic.
+
+Over-engineering red flags — stop and simplify if you see yourself writing:
+- An interface/factory/strategy with exactly one implementation
+- A wrapper function whose entire body is a single delegating call
+- Unused type parameters, config options no caller sets, plugin systems with one plugin
+- Observer/EventEmitter with 2 listeners, Singleton for a module variable, Builder for 3 fields
+- A function with boolean flags that switch behavior — write two functions instead
 
 ## On Correctness
 Correctness means the code does exactly what its name promises. Not more. Not less.

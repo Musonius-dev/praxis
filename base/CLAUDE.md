@@ -142,27 +142,42 @@ Kit manifests live in `~/.claude/kits/<name>/KIT.md`.
 
 ## Rules Registry — Load on Demand Only
 
-### Universal — always active (9 rules)
+### Universal — always active (12 rules)
+
+Quality is a generation-time constraint, not a post-hoc review. The rules below
+are the lens you write through — they shape every line of code produced.
+
 | File | Purpose |
 |------|---------|
 | `~/.claude/rules/profile.md` | Who the user is, identities, working style |
 | `~/.claude/rules/execution-loop.md` | SPEC/PLAN/VALIDATE loop enforcement |
 | `~/.claude/rules/coding.md` | Context7 mandate, tool preferences, quality architecture reference |
-| `~/.claude/rules/code-quality.md` | Layer 2: Active constraints — hard limits during generation |
+| `~/.claude/rules/code-quality.md` | Active constraints — hard limits during generation (30 lines, 3 nesting, 4 params) |
+| `~/.claude/rules/code-excellence.md` | Core principles — simplicity, correctness, naming, error design, dependency hygiene |
+| `~/.claude/rules/engineering-judgment.md` | Meta-reasoning — Five Questions, YAGNI, Rule of Three, reversibility test |
+| `~/.claude/rules/self-verify.md` | Self-verification — 24-check protocol before every commit |
 | `~/.claude/rules/git-workflow.md` | Commits, branches, identity verification, pre-commit checks |
 | `~/.claude/rules/vault.md` | Second brain integration — vault backend, file purposes |
 | `~/.claude/rules/context-management.md` | Context anti-rot, phase scoping, context reset protocol |
 | `~/.claude/rules/memory-boundary.md` | Auto-memory boundary, MEMORY.md cap, dream integration |
 | `~/.claude/rules/security-posture.md` | Sandbox model, credential protection, protected paths |
 
-### Skills — loaded at session start
-| File | Purpose |
-|------|---------|
-| `~/.claude/skills/code-excellence.md` | Layer 1: Principles — shapes reasoning about code |
-| `~/.claude/skills/engineering-judgment.md` | Layer 1: Meta-reasoning — principal engineer decision framework |
-| `~/.claude/skills/self-verify.md` | Layer 3: Self-verification protocol — proves correctness before commit |
-
 ### Scoped — load only when paths match
+
+#### Language quality (generation-time constraints per language)
+| File | Loads when |
+|------|------------|
+| `~/.claude/rules/python-quality.md` | `**/*.py` |
+| `~/.claude/rules/typescript-quality.md` | `**/*.ts`, `**/*.tsx` |
+| `~/.claude/rules/shell-quality.md` | `**/*.sh` |
+| `~/.claude/rules/go-quality.md` | `**/*.go` |
+| `~/.claude/rules/rust-quality.md` | `**/*.rs` |
+| `~/.claude/rules/java-quality.md` | `**/*.java` |
+| `~/.claude/rules/css-quality.md` | `**/*.css`, `**/*.scss`, `**/*.less` |
+| `~/.claude/rules/sql-quality.md` | `**/*.sql` |
+| `~/.claude/rules/api-quality.md` | `**/routes/**`, `**/api/**`, `**/controllers/**`, `**/handlers/**` |
+
+#### Infrastructure and tooling
 | File | Loads when |
 |------|------------|
 | `~/.claude/rules/azure.md` | `**/*.tf`, `**/*.bicep`, `**/*.azcli` |
