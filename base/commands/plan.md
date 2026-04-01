@@ -1,3 +1,7 @@
+---
+description: Generates a phased implementation plan with checkpoints from an approved spec. Activates on "plan", "break this down", "implementation steps", or after spec approval. Medium freedom.
+---
+
 Generate an implementation plan for an approved spec.
 
 ## Prerequisites

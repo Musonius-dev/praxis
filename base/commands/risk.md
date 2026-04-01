@@ -1,3 +1,7 @@
+---
+description: Generates a severity-rated risk register (technical, security, operational) for the active track. Activates on "risk", "what could go wrong", "risk assessment". Medium freedom.
+---
+
 Generate a risk register for the current task or track.
 
 ## Instructions

@@ -1,3 +1,7 @@
+---
+description: Generates a WHAT/DONE-WHEN/CONSTRAINTS/NON-GOALS specification before implementation. Activates on "spec", "write a spec", "define requirements", or before any implementation. Medium freedom.
+---
+
 Generate a specification for the requested work.
 
 ## Instructions

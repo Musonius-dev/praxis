@@ -1,6 +1,8 @@
-Checkpoint current state to disk and prepare for a fresh context.
+---
+description: Checkpoints current state to disk and outputs a bootstrap block for fresh context. Activates on "context reset", "checkpoint", "save state", or when context rot is visible. Low freedom.
+---
 
-Use this when context rot is visible: repeated instructions, forgotten constraints, contradicting earlier decisions, or spec violations.
+Checkpoint current state to disk and prepare for a fresh context. Use when context rot is visible: repeated instructions, forgotten constraints, contradicting earlier decisions, or spec violations.
 
 ## Instructions
 

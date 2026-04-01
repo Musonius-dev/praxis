@@ -1,3 +1,7 @@
+---
+description: Validates and deploys Azure infrastructure with mandatory what-if preview and human approval gate. Activates on "az deploy", "deploy to azure", "push infra". Low freedom — destructive operation.
+---
+
 Azure deployment workflow — validate, plan, deploy with rollback.
 
 ## Instructions

@@ -1,6 +1,6 @@
 ---
 disable-model-invocation: true
-description: Retrofit the Praxis harness onto an existing project
+description: Retrofits the Praxis harness onto an existing project without disrupting its structure. Activates on "scaffold existing", "wire up project", "add harness". Low freedom.
 ---
 
 # /scaffold-exist
@@ -32,10 +32,11 @@ Wire an existing project into the Praxis harness without disrupting its current 
    - `.claude/rules/` — create directory for project-specific rules
    - `.gitignore` — append praxis entries if file exists
 
-5. **Verify**:
-   - Confirm all harness files present
-   - Confirm vault entry exists
-   - Print summary of what was added vs. what was skipped
+5. **Verify** (must PASS before reporting success):
+   - Check each harness file exists on disk — report PASS/FAIL per file
+   - Check vault entry directory exists — PASS/FAIL
+   - If any FAIL: fix the missing file and re-verify (loop until all PASS)
+   - Print summary of what was added vs. skipped only after all checks PASS
 
 ## Rules
 

@@ -103,7 +103,7 @@ These eight rules are always enforced:
 
 ## Rules
 
-Praxis includes 15 rule files that shape Claude's behavior. **Universal rules** are always active. **Path-scoped rules** load only when Claude touches matching files.
+Praxis includes 16 rule files that shape Claude's behavior. **Universal rules** are always active. **Path-scoped rules** load only when Claude touches matching files.
 
 ### Universal Rules
 
@@ -131,6 +131,7 @@ These load automatically when Claude touches files matching the glob pattern.
 | **github-actions** | `.github/**` | Pin actions to SHA, minimal permissions, use caching, secrets management |
 | **azure** | `**/*.bicep`, `**/azure*`, `**/az*` | CAF naming convention, Managed Identities, required tags (Env/Owner/Project/CostCenter) |
 | **powershell** | `**/*.ps1`, `**/*.psm1`, `**/*.psd1` | Approved verbs, PascalCase, `$ErrorActionPreference = 'Stop'`, SecureString for credentials |
+| **skill-authoring** | `**/skills/**`, `**/commands/**`, `**/kits/**` | Mandatory frontmatter, description-as-discovery-API, calibrated freedom levels, feedback loops, token posture |
 
 ---
 
@@ -225,7 +226,7 @@ Reports PASS/FAIL per tool with file/line errors. Blocks commit if anything fail
 
 ### `/session-retro` — Session Retrospective
 
-**Non-negotiable at the end of every session.** This is how the harness compounds.
+Run at the end of every session. This is how the harness compounds.
 
 - Summarizes the session: ACCOMPLISHED / IN PROGRESS / LEARNINGS / NEXT SESSION
 - Extracts learnings with tags: `[LEARN:architecture]`, `[LEARN:tooling]`, `[LEARN:process]`, etc.
@@ -415,7 +416,7 @@ praxis/
 │   └── cli.js               npx CLI entry point
 ├── base/
 │   ├── CLAUDE.md             Global identity + core rules + kit registry
-│   ├── rules/                14 universal + path-scoped rules
+│   ├── rules/                15 universal + path-scoped rules
 │   ├── commands/             5 slash commands
 │   └── skills/               5 invocable skills (human-only)
 ├── kits/

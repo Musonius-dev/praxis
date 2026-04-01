@@ -1,3 +1,7 @@
+---
+description: Activates or deactivates an AI-Kit by name. Activates on "/kit:name" or "/kit:off". Low freedom.
+---
+
 Activate or deactivate an AI-Kit.
 
 ## Usage

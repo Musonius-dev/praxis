@@ -1,6 +1,6 @@
 ---
 disable-model-invocation: true
-description: Bootstrap a new project with vault entry, CLAUDE.md, .gitignore, claude-progress.json
+description: Bootstraps a new project with vault entry, CLAUDE.md, .gitignore, and claude-progress.json. Activates on "new project", "scaffold new", "start project". Low freedom.
 ---
 
 # /scaffold-new
@@ -36,10 +36,11 @@ Bootstrap a brand-new project into the Praxis harness.
    - If JavaScript/TypeScript detected: add JS/TS-specific rules
    - If Terraform detected: note that base terraform.md will auto-load
 
-5. **Verify**:
-   - Confirm all files created
-   - Confirm vault entry exists
-   - Print summary of what was scaffolded
+5. **Verify** (must PASS before reporting success):
+   - Check each expected file exists on disk — report PASS/FAIL per file
+   - Check vault entry directory exists — PASS/FAIL
+   - If any FAIL: fix the missing file and re-verify (loop until all PASS)
+   - Print summary only after all checks PASS
 
 ## Rules
 

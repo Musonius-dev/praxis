@@ -1,11 +1,11 @@
 ---
 disable-model-invocation: true
-description: Vault entropy check — stale projects, orphaned notes, missing status files
+description: Audits the Obsidian vault for stale projects, orphaned notes, and missing status files. Activates on "vault gc", "vault cleanup", "check vault". Low freedom — read-only.
 ---
 
 # /vault-gc
 
-Audit the Obsidian vault for entropy: stale projects, orphaned notes, missing tracking files.
+Scan the Obsidian vault for stale projects, orphaned notes, and missing tracking files.
 
 ## Steps
 

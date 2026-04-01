@@ -1,3 +1,7 @@
+---
+description: Audits Azure infrastructure for security, cost, reliability, and naming with severity-rated findings. Activates on "az review", "audit infrastructure", "cloud review". Medium freedom.
+---
+
 Azure infrastructure review — security, cost, reliability, and naming audit.
 
 ## Instructions

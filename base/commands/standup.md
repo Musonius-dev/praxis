@@ -1,3 +1,7 @@
+---
+description: Generates yesterday/today/blockers standup from claude-progress.json. Activates on "standup", "status", "where are we", or at session start. Low freedom.
+---
+
 Generate a standup summary from claude-progress.json.
 
 ## Instructions

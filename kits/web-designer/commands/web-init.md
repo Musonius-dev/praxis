@@ -1,3 +1,7 @@
+---
+description: Initializes a design system with tokens, base components, and reset styles. Activates on "web init", "design system", "init styles" with web-designer kit active. Medium freedom.
+---
+
 Initialize a design system for the current project.
 
 ## Instructions

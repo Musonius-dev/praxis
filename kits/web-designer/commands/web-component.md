@@ -1,3 +1,7 @@
+---
+description: Creates a UI component through full lifecycle — design, build, test, document. Activates on "web component", "new component", "create component" with web-designer kit active. High freedom.
+---
+
 Create a new UI component through the full lifecycle.
 
 ## Instructions

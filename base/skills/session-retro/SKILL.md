@@ -1,11 +1,11 @@
 ---
 disable-model-invocation: true
-description: End-of-session retrospective — log learnings, update progress
+description: Logs learnings to vault and updates claude-progress.json at session end. Activates on "session retro", "end session", "wrap up". Low freedom.
 ---
 
 # /session-retro
 
-**Non-negotiable.** Every session ends with this. This is how the harness compounds.
+Run at the end of every session. This is how the harness compounds.
 
 ## Steps
 

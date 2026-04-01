@@ -1,6 +1,6 @@
 ---
 disable-model-invocation: true
-description: Run lint, format, and type-check before commit
+description: Runs lint, format, and type-check before commit with per-tool PASS/FAIL reporting. Activates on "pre-commit", "lint check", "ready to commit". Low freedom.
 ---
 
 # /pre-commit-lint
