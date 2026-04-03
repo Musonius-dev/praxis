@@ -62,6 +62,8 @@ All `{vault_path}` references in rules and skills resolve from this config.
 - Compact trigger: when context approaches ceiling, finish the current milestone first
 - Never compact mid-plan — complete the milestone, write phase summary to vault, then compact
 - After compaction: re-bootstrap from § After Compaction below, re-run quality checks fresh
+- Context budget: see `~/.claude/rules/context-budget.md` for allocation ratios and cost-conscious loading
+- Mid-session optimization: `/px-compact` (no /clear). Full reset: `/px-context-reset` + `/clear`
 
 ## Durable Memory
 Context is volatile. Files are permanent. Act accordingly.
@@ -110,7 +112,8 @@ Missing servers are non-blocking — features degrade gracefully.
    - Git operation → `~/.claude/rules/git-workflow.md`
    - Client-facing writing → auto-loaded by `px-communication-standards` skill
    - Architecture/specs → auto-loaded by `px-architecture-patterns` skill
-5. Quality re-anchor: read most recent `compact-checkpoint.md` → check the Quality State section.
+5. If a triage checkpoint exists (`*-compact-checkpoint.md` with tag `triage`), use its "Active Working Set" to reload files — it is more precise than the hook checkpoint.
+6. Quality re-anchor: read most recent `compact-checkpoint.md` → check the Quality State section.
    - If lint findings existed before compaction: re-run `golangci-lint run`, confirm status.
    - If tests were failing before compaction: re-run test command, confirm status.
    - Do NOT assume pre-compaction state is current. Always re-run fresh.
@@ -140,12 +143,12 @@ Kits activate via `/px-kit:<n>` slash command. Kits are idempotent — double-ac
 | security | `/px-kit:security` | Threat modeling → IAM review → OWASP audit |
 | code-quality | `/px-kit:code-quality` | SAST + secrets + SCA + IaC gate → AI review (over-engineering, smells, structure) |
 | data | `/px-kit:data` | Schema design → migration planning → query optimization |
-
 Kit manifests live in `~/.claude/kits/<name>/KIT.md`.
+Kit fields: `context_cost` (low/medium/high), `depends_on` (kit dependencies), `skills_chain` (phased workflow).
 
 ## Rules Registry — Load on Demand Only
 
-### Universal — always active (14 rules)
+### Universal — always active (16 rules)
 
 Quality is a generation-time constraint, not a post-hoc review. The rules below
 are the lens you write through — they shape every line of code produced.
@@ -166,6 +169,8 @@ are the lens you write through — they shape every line of code produced.
 | `~/.claude/rules/security-posture.md` | Sandbox model, credential protection, protected paths |
 | `~/.claude/rules/writing-quality.md` | Prose constraints — sentence limits, fluff kill list, doc templates, voice rules |
 | `~/.claude/rules/refactor-triggers.md` | Pre-check protocol, commit refactor separately, QUALITY: comment convention |
+| `~/.claude/rules/context-budget.md` | Quantitative budget zones, cost-conscious loading, MCP server discipline |
+| `~/.claude/rules/self-repair.md` | Structured recovery — 3-attempt escalation ladder, strategy rotation |
 
 ### Scoped — load only when paths match
 
@@ -198,6 +203,22 @@ are the lens you write through — they shape every line of code produced.
 | File | Loads when |
 |------|------------|
 | `~/.claude/rules/observable-code.md` | `**/services/**`, `**/handlers/**`, `**/workers/**`, `**/middleware/**`, `**/cmd/**` |
+
+#### Workflow and orchestration
+| File | Loads when |
+|------|------------|
+| `~/.claude/rules/session-bridge.md` | Session start/end, vault handoff, cross-session continuity |
+| `~/.claude/rules/hooks-policy.md` | Adding or modifying hooks in `settings-hooks.json` |
+| `~/.claude/rules/multi-agent-orchestration.md` | Tasks crossing >3 files or multiple domains |
+| `~/.claude/rules/phase-detection.md` | Workflow phase transitions, kit phase changes |
+| `~/.claude/rules/session-metrics.md` | End-of-session retrospective, metrics collection |
+| `~/.claude/rules/skill-authoring.md` | Creating or editing `base/skills/*/SKILL.md` files |
+
+#### Agent specs
+| File | Purpose |
+|------|---------|
+| `base/agents/evaluator.md` | Evaluator agent for Generator/Evaluator pattern |
+| `base/agents/planner.md` | Planner agent for task decomposition |
 
 ### Auto-invocable skills (replace former universal rules)
 | Skill | Triggers when |

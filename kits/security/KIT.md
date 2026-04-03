@@ -14,6 +14,8 @@ skills_chain:
   - phase: audit
     skills: []
     status: planned
+context_cost: medium
+depends_on: []
 mcp_servers: []
 rules:
   - security.md

@@ -13,6 +13,8 @@ skills_chain:
     skills: [web-accessibility, ui-skills-baseline, ui-skills-motion]
   - phase: final-lint
     skills: [web-design-guidelines]
+context_cost: medium
+depends_on: []
 mcp_servers:
   - name: 21st-magic
     command: npx -y @21st-dev/magic@latest

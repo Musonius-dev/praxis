@@ -72,6 +72,10 @@ conversation length heuristic (not token count — we cannot read session JSONL)
 - Write all state to vault immediately
 - Suggest new session for remaining milestones
 
+### Budget integration
+See `context-budget.md` for quantitative thresholds and allocation ratios.
+Use `/px-compact` for mid-session optimization; `/px-context-reset` + `/clear` for full reset.
+
 ---
 
 ## Verification Commands

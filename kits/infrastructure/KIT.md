@@ -17,6 +17,8 @@ skills_chain:
   - phase: compliance
     skills: []
     status: planned
+context_cost: high
+depends_on: []
 mcp_servers: []
 rules:
   - infrastructure.md

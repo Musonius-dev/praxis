@@ -14,6 +14,8 @@ skills_chain:
   - phase: contract
     skills: []
     status: planned
+context_cost: medium
+depends_on: []
 mcp_servers: []
 rules:
   - api-design.md

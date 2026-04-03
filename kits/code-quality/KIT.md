@@ -4,6 +4,8 @@ version: 1.0.0
 description: "Code quality enforcement — parallel deterministic gate (SAST, secrets, SCA, IaC) + AI review layer (over-engineering, smells, structure, performance)"
 activation: /kit:code-quality
 deactivation: /kit:off
+context_cost: high
+depends_on: []
 skills_chain:
   - phase: gate
     skills: [sast-scan, secrets-scan, sca-scan, iac-scan]

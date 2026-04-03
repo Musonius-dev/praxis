@@ -26,7 +26,7 @@ Assess these indicators (do NOT read external files just for this — use what y
 | Compaction occurred | Did you receive a compaction bootstrap? |
 | Active task complexity | Simple (1-2 files) vs complex (5+ files, multi-milestone) |
 
-**Step 2 — Estimate bracket**
+**Step 2 — Estimate bracket** (quantitative thresholds: see `context-budget.md` § Budget signals)
 
 | Bracket | Signals | Action |
 |---------|---------|--------|
