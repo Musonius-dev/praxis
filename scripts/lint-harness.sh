@@ -104,7 +104,6 @@ fi
 # ─── 3b. Prompt block frontmatter + content quality ───
 echo ""
 echo "Prompt blocks (frontmatter + content quality):"
-VALID_PLATFORMS="claude-code claude-project perplexity-space"
 if [[ -d "$REPO_PATH/prompts/blocks" ]]; then
   while IFS= read -r block_file; do
     [[ -f "$block_file" ]] || continue
@@ -125,15 +124,7 @@ if [[ -d "$REPO_PATH/prompts/blocks" ]]; then
     # Recommended frontmatter
     echo "$header" | grep -q "^description:" || warn "$rel_path missing description:"
 
-    # Validate platforms array contains only valid targets
     platforms_line=$(echo "$header" | grep "^platforms:")
-    for valid in $VALID_PLATFORMS; do
-      # This is a positive check — we only warn on invalid entries
-      :
-    done
-    if echo "$platforms_line" | grep -qvE "claude-code|claude-project|perplexity-space"; then
-      : # platforms line exists but may have invalid entries — hard to parse in bash, skip
-    fi
 
     # Check block body is not empty (content after frontmatter closing ---)
     body_chars=$(sed -n '/^---$/,/^---$/d; p' "$block_file" | wc -c | tr -d ' ')

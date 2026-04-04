@@ -5,16 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 
-const PKG_DIR = path.resolve(__dirname, '..');
-const BLOCKS_DIR = path.join(PKG_DIR, 'prompts', 'blocks');
-const PROFILES_DIR = path.join(PKG_DIR, 'prompts', 'profiles');
-
-/** Parse YAML frontmatter from markdown. */
-function parseFrontmatter(content) {
-  const match = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-  if (!match) return { meta: {}, body: content.trim() };
-  return { meta: yaml.load(match[1]) || {}, body: match[2].trim() };
-}
+const { BLOCKS_DIR, PROFILES_DIR, parseFrontmatter } = require('../lib/loader');
 
 /** Collect all blocks from the blocks directory. */
 function loadAllBlocks() {
@@ -55,12 +46,9 @@ function loadAllProfiles() {
     if (!file.endsWith('.yaml')) continue;
     const name = file.replace('.yaml', '');
     const content = yaml.load(fs.readFileSync(path.join(PROFILES_DIR, file), 'utf8'));
-    const blockIds = [];
-    if (content.blocks) {
-      for (const ids of Object.values(content.blocks)) {
-        if (Array.isArray(ids)) blockIds.push(...ids);
-      }
-    }
+    const blockIds = content.blocks
+      ? Object.values(content.blocks).filter(Array.isArray).flat()
+      : [];
     profiles[name] = { ...content, blockIds };
   }
   return profiles;
