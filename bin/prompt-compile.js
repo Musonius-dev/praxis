@@ -58,10 +58,10 @@ function validateStandalone(projectName, projectDir, projectConfig) {
   console.log(`\nValidating standalone: ${projectName}`);
 
   const inventory = [
-    { file: 'system-prompt.md', budget: Infinity, required: true, label: 'System Prompt (Claude Projects)' },
+    { file: 'system-prompt.md', budget: Infinity, required: true, label: 'System Prompt (Source)' },
     { file: 'CLAUDE.md', budget: Infinity, required: false, label: 'Claude Code' },
-    { file: 'space-instructions.md', budget: CHAR_BUDGETS['perplexity-space'], required: false, label: 'Perplexity Space' },
-    { file: 'project-instructions.md', budget: CHAR_BUDGETS['claude-project'], required: false, label: 'Claude Project' },
+    { file: 'space-instructions-perplexity.md', budget: CHAR_BUDGETS['perplexity-space'], required: false, label: 'Perplexity Space' },
+    { file: 'project-instructions-claude-desktop.md', budget: CHAR_BUDGETS['claude-project'], required: false, label: 'Claude Desktop' },
   ];
 
   const results = [];
@@ -165,8 +165,8 @@ function compileProject(projectName, targets) {
 
   const outputNames = {
     'claude-code': 'CLAUDE.md',
-    'claude-project': 'project-instructions.md',
-    'perplexity-space': 'space-instructions.md',
+    'claude-project': 'project-instructions-claude-desktop.md',
+    'perplexity-space': 'space-instructions-perplexity.md',
   };
 
   const results = [];
@@ -254,7 +254,7 @@ function main() {
       console.log('No projects found.');
       process.exit(0);
     }
-    console.log(`${'Project'.padEnd(20)} ${'Mode'.padEnd(12)} ${'System Prompt'.padEnd(15)} ${'Claude Proj'.padEnd(15)} ${'Perplexity'.padEnd(15)} ${'CLAUDE.md'.padEnd(12)} Refs`);
+    console.log(`${'Project'.padEnd(20)} ${'Mode'.padEnd(12)} ${'System Prompt'.padEnd(15)} ${'Claude Desktop'.padEnd(15)} ${'Perplexity'.padEnd(15)} ${'CLAUDE.md'.padEnd(12)} Refs`);
     console.log('-'.repeat(95));
     for (const name of projectDirs) {
       const dir = path.join(PROJECTS_DIR, name);
@@ -271,7 +271,7 @@ function main() {
         ? fs.readdirSync(refsDir).filter((f) => f.endsWith('.md')).length
         : 0;
       console.log(
-        `${name.padEnd(20)} ${mode.padEnd(12)} ${fileStatus('system-prompt.md').padEnd(15)} ${fileStatus('project-instructions.md').padEnd(15)} ${fileStatus('space-instructions.md').padEnd(15)} ${fileStatus('CLAUDE.md').padEnd(12)} ${refCount}`
+        `${name.padEnd(20)} ${mode.padEnd(12)} ${fileStatus('system-prompt.md').padEnd(15)} ${fileStatus('project-instructions-claude-desktop.md').padEnd(15)} ${fileStatus('space-instructions-perplexity.md').padEnd(15)} ${fileStatus('CLAUDE.md').padEnd(12)} ${refCount}`
       );
     }
     process.exit(0);

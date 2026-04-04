@@ -1,0 +1,16 @@
+project: elect-azure
+description: Enterprise Architect at Virginia Department of Elections (ELECT) focusing on Azure Architecture, ADRs, and design documentation
+mode: standalone
+version: "1.0"
+platforms: [claude-project, perplexity-space, claude-code]
+profile: null
+identity: solutions-architect
+domains:
+  - cloud-infrastructure
+research_domains:
+  - VITA enterprise architecture standards (EA200, EA225, EA300, SEC530)
+  - Azure Well-Architected Framework and Cloud Adoption Framework
+  - Virginia Department of Elections (ELECT) technology systems (VERIS, ePollTab)
+  - Commonwealth of Virginia cloud modernization (NTT DATA + Azure)
+  - Virginia AI governance (EO 30, AI Registry)
+knowledge_files: []
