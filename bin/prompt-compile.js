@@ -53,7 +53,7 @@ function ok(msg) {
 
 // ── Main ─────────────────────────────────────────────────────
 
-/** Validate a standalone project — check files exist, report char budgets. */
+/** Validate a standalone project — check files exist, report char budgets. Returns result rows for summary. */
 function validateStandalone(projectName, projectDir, projectConfig) {
   console.log(`\nValidating standalone: ${projectName}`);
 
@@ -64,6 +64,7 @@ function validateStandalone(projectName, projectDir, projectConfig) {
     { file: 'project-instructions.md', budget: CHAR_BUDGETS['claude-project'], required: false, label: 'Claude Project' },
   ];
 
+  const results = [];
   let missingGenerable = [];
 
   for (const item of inventory) {
@@ -75,14 +76,18 @@ function validateStandalone(projectName, projectDir, projectConfig) {
       const sizeInfo = item.budget < Infinity
         ? `${charCount} chars (budget: ${item.budget})`
         : `${charCount} chars, ${lineCount} lines`;
+      const overBudget = charCount > item.budget;
 
-      if (charCount > item.budget) {
+      if (overBudget) {
         warn(`${item.file} exceeds budget: ${charCount} chars (limit: ${item.budget})`);
       } else {
         ok(`${item.file} — ${sizeInfo}`);
       }
+
+      results.push({ project: projectName, target: item.label, chars: charCount, budget: item.budget, status: overBudget ? 'OVER' : 'ok' });
     } else if (item.required) {
       warn(`${item.file} MISSING — standalone projects require a system prompt`);
+      results.push({ project: projectName, target: item.label, chars: 0, budget: item.budget, status: 'MISSING' });
     } else {
       missingGenerable.push(item.file);
     }
@@ -111,8 +116,11 @@ function validateStandalone(projectName, projectDir, projectConfig) {
       ok(`${refs.length} reference file(s): ${refs.join(', ')}`);
     }
   }
+
+  return { mode: 'standalone', results };
 }
 
+/** Compile a project. Returns { mode, results[] } for summary table. */
 function compileProject(projectName, targets) {
   const projectDir = path.join(PROJECTS_DIR, projectName);
   const configPath = path.join(projectDir, 'prompt-config.yaml');
@@ -123,22 +131,18 @@ function compileProject(projectName, targets) {
 
   const projectConfig = yaml.load(fs.readFileSync(configPath, 'utf8'));
 
-  // Standalone mode: validate files, report budgets, skip compilation
   if (projectConfig.mode === 'standalone') {
-    validateStandalone(projectName, projectDir, projectConfig);
-    return;
+    return validateStandalone(projectName, projectDir, projectConfig);
   }
 
   const praxisConfig = loadPraxisConfig();
 
-  // Build vars map: project vars + praxis config + project name
   const vars = {
     ...praxisConfig,
     ...(projectConfig.vars || {}),
     project: projectConfig.project || projectName,
   };
 
-  // Load profile: from named profile, project-local blocks, or _base fallback
   let profile;
   if (projectConfig.profile) {
     profile = loadProfile(projectConfig.profile, fail);
@@ -153,7 +157,7 @@ function compileProject(projectName, targets) {
   const profileName = projectConfig.profile || 'project-local';
   console.log(`\nCompiling: ${projectName} (profile: ${profileName})`);
 
-  const assemblers = {
+  const targetAssemblers = {
     'claude-code': assembleClaudeCode,
     'claude-project': assembleClaudeProject,
     'perplexity-space': assemblePerplexitySpace,
@@ -165,14 +169,14 @@ function compileProject(projectName, targets) {
     'perplexity-space': 'space-instructions.md',
   };
 
+  const results = [];
+
   for (const target of targets) {
     const blocks = loadBlocks(profile, target, warn);
-    let output = assemblers[target](blocks, projectConfig, vars);
+    let output = targetAssemblers[target](blocks, projectConfig, vars);
 
-    // Interpolate variables
     output = interpolate(output, vars);
 
-    // Validate no unresolved placeholders
     const unresolved = findUnresolved(output);
     if (unresolved.length > 0) {
       if (STRICT_MODE) {
@@ -181,9 +185,9 @@ function compileProject(projectName, targets) {
       warn(`Unresolved placeholders in ${target}: ${unresolved.join(', ')}`);
     }
 
-    // Check character budget
     const budget = CHAR_BUDGETS[target];
-    if (output.length > budget) {
+    const overBudget = output.length > budget;
+    if (overBudget) {
       if (STRICT_MODE) {
         fail(`[strict] ${target} exceeds budget: ${output.length} chars (limit: ${budget})`);
       }
@@ -191,32 +195,38 @@ function compileProject(projectName, targets) {
     }
 
     const outputPath = path.join(projectDir, outputNames[target]);
+    let status = 'wrote';
 
-    // Preview mode: print to stdout instead of writing
     if (PREVIEW_MODE) {
       console.log(`\n--- ${outputNames[target]} (${output.length} chars) ---`);
       console.log(output);
-      continue;
-    }
-
-    // Diff mode: show diff against existing file before writing
-    if (DIFF_MODE && fs.existsSync(outputPath)) {
+      status = 'preview';
+    } else if (DIFF_MODE && fs.existsSync(outputPath)) {
       const existing = fs.readFileSync(outputPath, 'utf8');
       if (existing === output) {
         ok(`${outputNames[target]} — unchanged (${output.length} chars)`);
-        continue;
+        status = 'unchanged';
+      } else {
+        const existingLines = existing.split('\n');
+        const outputLines = output.split('\n');
+        const addedCount = outputLines.filter((l) => !existingLines.includes(l)).length;
+        const removedCount = existingLines.filter((l) => !outputLines.includes(l)).length;
+        console.log(`\n--- ${outputNames[target]} changed ---`);
+        console.log(`  +${addedCount} lines added, -${removedCount} lines removed`);
+        fs.writeFileSync(outputPath, output, 'utf8');
+        ok(`${outputNames[target]} — ${output.length} chars → ${outputPath}`);
+        status = 'updated';
       }
-      console.log(`\n--- ${outputNames[target]} changed ---`);
-      const existingLines = existing.split('\n');
-      const outputLines = output.split('\n');
-      const addedCount = outputLines.filter((l) => !existingLines.includes(l)).length;
-      const removedCount = existingLines.filter((l) => !outputLines.includes(l)).length;
-      console.log(`  +${addedCount} lines added, -${removedCount} lines removed`);
+    } else {
+      fs.writeFileSync(outputPath, output, 'utf8');
+      ok(`${outputNames[target]} — ${output.length} chars → ${outputPath}`);
     }
 
-    fs.writeFileSync(outputPath, output, 'utf8');
-    ok(`${outputNames[target]} — ${output.length} chars → ${outputPath}`);
+    if (overBudget) status = 'OVER';
+    results.push({ project: projectName, target, chars: output.length, budget, status });
   }
+
+  return { mode: 'compiled', results };
 }
 
 // ── CLI ──────────────────────────────────────────────────────
@@ -225,12 +235,13 @@ function main() {
   const args = process.argv.slice(2);
 
   if (args.length === 0 || args.includes('--help')) {
-    console.log('Usage: prompt-compile <project-name|--all> [options]');
+    console.log('Usage: prompt-compile <project-name|--all|--sync> [options]');
     console.log('Options:');
     console.log('  --target <target>  claude-code|claude-project|perplexity-space|all');
     console.log('  --preview          Print output to stdout without writing files');
     console.log('  --diff             Show what changed before writing');
     console.log('  --strict           Exit with error on budget overruns or unresolved vars');
+    console.log('  --sync             Compile all projects with diff, show summary table');
     console.log('  --list             List all projects with mode and file status');
     process.exit(0);
   }
@@ -290,7 +301,12 @@ function main() {
   }
   const projectArg = args.find((a) => !a.startsWith('--') && !flagValues.has(a));
 
-  if (args.includes('--all')) {
+  const isSync = args.includes('--sync');
+  if (isSync) {
+    DIFF_MODE = true;
+  }
+
+  if (args.includes('--all') || isSync) {
     const projectDirs = fs.readdirSync(PROJECTS_DIR)
       .filter((d) => d !== '_template' && fs.statSync(path.join(PROJECTS_DIR, d)).isDirectory());
 
@@ -298,16 +314,42 @@ function main() {
       fail('No projects found in prompts/projects/');
     }
 
+    const allResults = [];
     for (const projectName of projectDirs) {
-      compileProject(projectName, targets);
+      const result = compileProject(projectName, targets);
+      if (result) allResults.push(result);
     }
+
+    printSummaryTable(allResults);
   } else if (projectArg) {
     compileProject(projectArg, targets);
   } else {
-    fail('Specify a project name or use --all');
+    fail('Specify a project name or use --all / --sync');
   }
 
   console.log('\nDone.');
+}
+
+/** Print a summary table after --all or --sync compilation. */
+function printSummaryTable(projectResults) {
+  if (projectResults.length === 0) return;
+
+  console.log('\n\x1b[1m── Summary ──────────────────────────────────────────────────────\x1b[0m');
+  console.log(
+    `${'Project'.padEnd(16)} ${'Mode'.padEnd(12)} ${'Target'.padEnd(18)} ${'Chars'.padEnd(10)} ${'Budget'.padEnd(10)} Status`
+  );
+  console.log('-'.repeat(78));
+
+  for (const { mode, results } of projectResults) {
+    for (const row of results) {
+      const budgetStr = row.budget === Infinity ? '—' : String(row.budget);
+      const statusColor = row.status === 'OVER' || row.status === 'MISSING' ? '\x1b[31m' :
+        row.status === 'unchanged' ? '\x1b[90m' : '\x1b[32m';
+      console.log(
+        `${row.project.padEnd(16)} ${mode.padEnd(12)} ${row.target.padEnd(18)} ${String(row.chars).padEnd(10)} ${budgetStr.padEnd(10)} ${statusColor}${row.status}\x1b[0m`
+      );
+    }
+  }
 }
 
 main();

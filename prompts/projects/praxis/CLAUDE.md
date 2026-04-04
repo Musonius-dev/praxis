@@ -69,9 +69,6 @@ Praxis owns the outer loop: discuss → plan → execute → verify → simplify
 - No AI-generated comments or attributions in code or commits
 - Prefer simple, readable code over clever abstractions
 
-## Vault Project
-- **Vault path**: /Users/esoteric-mac/Documents/Esoteric Vault/01_Projects/Personal/_active/praxis
-
 ## Verification
 - Before marking any task complete, run the test suite
 - Check logs before claiming a bug is fixed
