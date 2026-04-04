@@ -558,77 +558,156 @@ Use this context when the user asks for changes — edit in place rather than re
 **Triggered when:** `/px-prompt --deal <deal-name>`
 
 This is the fastest path for the most common task: creating a new Maximus capture deal.
+**Zero questions asked** — Perplexity researches the deal from the name alone.
 
-### 7a. Ask 3 deal-specific questions
+### 7a. Deal name is the only input
 
-1. **Agency & Program** — "Which agency and program?" (e.g., "VA EHR Modernization")
-2. **Incumbents** — "Who's the incumbent?" (e.g., "Oracle Health (Cerner)")
-3. **Contract details** — "Contract type, vehicle, value, NAICS?" (user fills what they know, rest stays TBD)
+The deal name IS the research query. No intake questions needed.
 
-That's it. Role, domains, profile, platforms — all pre-set to `maximus-sa`.
+```
+/px-prompt --deal irs-masterfile
+/px-prompt --deal benefeds
+/px-prompt --deal dha-tricare
+```
 
-### 7b. Auto-scaffold with maximus-sa
+If the user provides additional context alongside the name (e.g., `/px-prompt --deal irs-masterfile "IRS Individual Masterfile modernization, current incumbent Accenture"`), use it to seed the research. Otherwise, research from the name alone.
+
+### 7b. Research the deal via Perplexity (mandatory)
+
+Run these queries in parallel to build the deal intelligence:
+
+**Query 1 — Contract & procurement data:**
+```
+perplexity_research: "<deal-name> federal contract. Search SAM.gov, 
+USASpending.gov, FPDS.gov, GovWin. Find: agency, program office, 
+contract type, vehicle, NAICS, set-aside, estimated value, 
+period of performance, current status, solicitation number."
+```
+
+**Query 2 — Incumbent & competitive landscape:**
+```
+perplexity_research: "<deal-name> incumbent contractor. Who currently 
+holds this contract? Contract value, CPARS ratings if available, 
+key subcontractors, known competitors pursuing recompete. 
+Search GovConWire, Washington Technology, Bloomberg Government, 
+10-K filings, protest history on GAO.gov."
+```
+
+**Query 3 — Agency mission & pain points:**
+```
+perplexity_ask: "What is the mission context for <deal-name>? 
+Agency strategic plan priorities, relevant IG/GAO findings, 
+congressional testimony, budget trends, technology modernization 
+initiatives. What problems is the agency trying to solve?"
+```
+
+**Query 4 — Maximus positioning:**
+```
+perplexity_search: "Maximus Inc <agency from Q1> past performance 
+contracts site:usaspending.gov OR site:sam.gov"
+```
+
+**Source priority for deal research:**
+1. SAM.gov — active solicitations, contract awards, vendor registrations
+2. USASpending.gov — contract values, spending history, awardees
+3. FPDS.gov — detailed procurement records, contract modifications
+4. GovWin IQ — opportunity tracking, competitive intelligence (if accessible)
+5. Bloomberg Government (BGOV) — contract analytics, market intelligence
+6. GovConWire / Washington Technology — industry news, award announcements
+7. GAO.gov — protest decisions, audit findings
+8. Agency strategic plans & budget justifications — mission context
+9. SEC 10-K filings — competitor revenue, backlog, strategy statements
+
+If Perplexity cannot find data for a field, mark it `[RESEARCH NEEDED]` — not TBD.
+
+### 7c. Build deal context from research
+
+Structure Perplexity findings into a deal intelligence file:
+
+```markdown
+---
+deal: <deal-name>
+generated: <today>
+source: perplexity-research
+confidence: <HIGH if SAM.gov/FPDS data found, MEDIUM if news only, LOW if inferred>
+---
+
+# Deal Intelligence: <deal-name>
+
+## Opportunity Profile
+| Field | Value | Source |
+|-------|-------|--------|
+| Agency | <from research> | <source> |
+| Program | <from research> | <source> |
+| Solicitation # | <if found> | SAM.gov |
+| Contract Type | <from research> | <source> |
+| Vehicle | <from research> | <source> |
+| NAICS | <from research> | <source> |
+| Set-Aside | <from research> | <source> |
+| Estimated Value | <from research> | <source> |
+| POP | <from research> | <source> |
+| Status | <from research> | <source> |
+
+## Incumbent & Competition
+| Competitor | Role | Contract Value | CPARS | Strengths | Weaknesses |
+|-----------|------|---------------|-------|-----------|------------|
+| <incumbent> | Incumbent | <value> | <rating> | <from research> | <from research> |
+| <competitor 2> | Challenger | — | — | <from research> | <from research> |
+
+## Agency Mission Context
+<Pain points, strategic priorities, IG/GAO findings from Query 3>
+
+## Maximus Positioning
+<Existing contracts at this agency, relevant past performance, platform fit from Query 4>
+
+## Research Gaps
+<Fields marked [RESEARCH NEEDED] — what couldn't be found and where to look manually>
+
+## Sources
+<Citations from all Perplexity queries>
+```
+
+Write to `prompts/projects/<deal-name>/references/<deal-name>-intel.md`
+
+### 7d. Auto-scaffold with maximus-sa
 
 1. `mkdir -p prompts/projects/<deal-name>/references`
-2. Write `prompt-config.yaml`:
-   ```yaml
-   project: <deal-name>
-   description: "Maximus capture — <agency> <program>"
-   mode: compiled
-   profile: maximus-sa
-   version: "1.0"
-   platforms: [claude-project, perplexity-space, claude-code]
-   vars: {}
-   knowledge_packs:
-     - template: deal-context
-       output: deal-context.md
-       targets: [claude-project, perplexity-space]
-       vars:
-         agency: <from intake>
-         program_name: <from intake>
-         incumbents: <from intake>
-         contract_vehicle: <from intake or "TBD">
-         naics: <from intake or "TBD">
-         set_aside: <from intake or "TBD">
-         period_of_performance: <from intake or "TBD">
-         key_personnel: <from intake or "TBD">
-     - template: corporate-reference
-       output: maximus-corporate.md
-       targets: [claude-project, perplexity-space]
-       vars:
-         company_name: "Maximus Inc."
-         legal_name: "Maximus Inc."
-         ticker: "MMS (NYSE)"
-         hq: "Tysons, Virginia"
-         ceo: "Bruce Caswell"
-         uei: "RBGHRKKXVQ83"
-         cage_code: "7N773"
-         revenue: "~$5.31B (FY2024)"
-         backlog: "~$16.2B"
-         key_vehicles: "OASIS+, GSA MAS"
-         mission_threads: <from maximus project config>
-         key_partnerships: <from maximus project config>
-   ```
+2. Write `prompt-config.yaml` with `maximus-sa` profile, populating `knowledge_packs` vars from research findings
+3. Write deal intel to `references/<deal-name>-intel.md`
+4. Compile: `node bin/prompt-compile.js <deal-name>`
+5. Render knowledge packs: `node bin/prompt-knowledge.js <deal-name>`
 
-3. Compile: `node bin/prompt-compile.js <deal-name>`
-4. Render knowledge packs: `node bin/prompt-knowledge.js <deal-name>`
+### 7e. Show confirmation card with research findings
 
-### 7c. Run OSINT research (if Perplexity available)
+Instead of asking questions up front, show what Perplexity found:
 
-Auto-run Perplexity queries for the deal:
 ```
-perplexity_search: "<agency> <program> site:sam.gov OR site:usaspending.gov"
-perplexity_ask: "What is the current status of <agency> <program>? Incumbent, contract value, timeline, recent developments."
-perplexity_search: "<incumbent> federal contracts <agency>"
+DEAL: irs-masterfile
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Agency:      IRS (from USASpending)
+Program:     Individual Masterfile Modernization
+Incumbent:   Accenture Federal Services (from FPDS)
+Value:       $2.1B ceiling (from SAM.gov)
+Type:        IDIQ / TO
+NAICS:       541512
+Vehicle:     GSA Alliant 2
+Status:      Active — recompete expected FY2026
+Confidence:  HIGH (SAM.gov + FPDS data)
+
+Maximus PP:  2 contracts at IRS (from USASpending)
+Gaps:        Key personnel [RESEARCH NEEDED]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Files created:
+  ✓ CLAUDE.md (31,646 chars)
+  ✓ space-instructions-perplexity.md (3,976 chars)
+  ✓ references/irs-masterfile-intel.md
+  ✓ knowledge/deal-context.md
+  ✓ knowledge/maximus-corporate.md
+
+[Deploy] [Edit intel] [Re-research]
 ```
 
-Write findings to `references/<deal-name>-intel.md`.
-
-### 7d. Show results
-
-→ Step 4 (results table + deployment instructions)
-
-**Total: 3 questions → compiled project + deal context + OSINT intel + all platform outputs.**
+**Total: 0 questions → deal name only → Perplexity fills everything → compiled project + intel + all outputs.**
 
 ---
 
