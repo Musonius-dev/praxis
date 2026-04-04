@@ -11,7 +11,8 @@ Single entry point for the prompt engine. Detects what needs to happen based on 
 
 ## Invocation
 - `/px-prompt <project-name>` — create, generate, or regenerate a project's prompts
-- `/px-prompt --deal <deal-name>` — fast-path for new Maximus capture deals (3 questions)
+- `/px-prompt --deal <deal-name> [--type recompete|new-start|task-order|idiq]` — Maximus capture deal (0 questions)
+- `/px-prompt --advance <deal-name>` — advance deal to next capture phase, update scoring expectations
 - `/px-prompt --edit <project-name> "<change>"` — targeted edit, auto-regenerate platform outputs
 - `/px-prompt --sync` — recompile all projects, report diffs and budgets
 - `/px-prompt --dashboard` — project index with status, budgets, and staleness
@@ -57,8 +58,11 @@ When invoked with a project name, detect the right action:
 ```
 /px-prompt <args>
   │
-  ├─ --deal <deal-name>?
-  │   → ACTION: DEAL SHORTCUT (Step 7) — 3 questions, maximus-sa, auto-scaffold
+  ├─ --deal <deal-name> [--type ...]?
+  │   → ACTION: DEAL (Step 7) — 0 questions, Perplexity researches, auto-scaffold
+  │
+  ├─ --advance <deal-name>?
+  │   → ACTION: ADVANCE PHASE (Step 12) — move deal to next capture phase
   │
   ├─ --edit <project-name> "<change>"?
   │   → ACTION: TARGETED EDIT (Step 8) — edit one section, regenerate outputs
@@ -560,17 +564,61 @@ Use this context when the user asks for changes — edit in place rather than re
 This is the fastest path for the most common task: creating a new Maximus capture deal.
 **Zero questions asked** — Perplexity researches the deal from the name alone.
 
-### 7a. Deal name is the only input
+### 7a. Deal name + optional type
 
-The deal name IS the research query. No intake questions needed.
+The deal name IS the research query. Optional `--type` sets the deal template.
 
 ```
 /px-prompt --deal irs-masterfile
-/px-prompt --deal benefeds
-/px-prompt --deal dha-tricare
+/px-prompt --deal irs-masterfile --type recompete
+/px-prompt --deal benefeds --type idiq
+/px-prompt --deal dha-tricare --type new-start
 ```
 
+If no `--type` given, Perplexity research determines the type automatically (incumbent found = recompete, no incumbent = new-start, IDIQ/BPA language = task-order).
+
 If the user provides additional context alongside the name (e.g., `/px-prompt --deal irs-masterfile "IRS Individual Masterfile modernization, current incumbent Accenture"`), use it to seed the research. Otherwise, research from the name alone.
+
+### Deal Type Templates
+
+Each deal type activates different emphasis in the compiled output and research priorities:
+
+**Recompete** (`--type recompete`)
+- Incumbent defense: Remind → Reveal → Reimagine activated
+- Ghost theme matrix pre-seeded for incumbent weaknesses
+- Research priority: incumbent CPARS, protest history, pain points
+- Transition emphasis: continuity of operations, Day-1 readiness, retained mission knowledge
+- Scoring weight: Past Performance and Customer Relationship weighted higher
+- Phase start: Mid Capture (incumbent already has intel advantage)
+
+**New Start** (`--type new-start`)
+- Discovery-first: OSINT-heavy, agency mission deep dive
+- No incumbent to ghost — focus on innovation and fresh approach
+- Research priority: agency strategic plan, IG/GAO findings, budget trends, technology landscape
+- Solution emphasis: differentiated approach, not transition continuity
+- Scoring weight: Technical Approach and Solution Readiness weighted higher
+- Phase start: Shaping
+
+**Task Order** (`--type task-order`)
+- Vehicle-constrained: must map to existing IDIQ/BPA/GWACs scope
+- Fast timeline: typically 30-60 day turnaround
+- Research priority: task order history on the vehicle, rates, ceiling remaining
+- Emphasis: price competitiveness, rapid staffing, past performance on same vehicle
+- Scoring weight: Price and Past Performance weighted higher
+- Phase start: Mid Capture (vehicle already won)
+
+**IDIQ/BPA Pursuit** (`--type idiq`)
+- Long-game: win the vehicle, compete TOs later
+- Research priority: vehicle scope, evaluation criteria, small business targets
+- Emphasis: broad capabilities, teaming strategy, rate structure
+- Scoring weight: Technical Approach and Management Plan weighted higher
+- Phase start: Shaping
+
+The deal type is stored in `prompt-config.yaml` as `deal_type` and influences:
+1. Which Perplexity queries run (research priority above)
+2. The initial capture phase set in the deal config
+3. Which sections of the scorecard are weighted in gate reviews
+4. The Perplexity Space research domains (type-specific sources)
 
 ### 7b. Research the deal via Perplexity (mandatory)
 
@@ -672,14 +720,17 @@ Write to `prompts/projects/<deal-name>/references/<deal-name>-intel.md`
 ### 7d. Auto-scaffold with maximus-sa
 
 1. `mkdir -p prompts/projects/<deal-name>/references`
-2. Write `prompt-config.yaml` with `maximus-sa` profile, populating `knowledge_packs` vars from research findings
+2. Write `prompt-config.yaml`:
+   - Profile: `maximus-sa`
+   - `deal_type`: from `--type` flag or auto-detected from research (incumbent found → recompete, none → new-start)
+   - `capture_phase`: initial phase based on deal type (see template table above)
+   - `knowledge_packs`: deal-context + corporate-reference, vars populated from research
+   - `overrides.perplexity_space_append.research_domains`: **deal-specific** research domains (see 7f)
 3. Write deal intel to `references/<deal-name>-intel.md`
 4. Compile: `node bin/prompt-compile.js <deal-name>`
 5. Render knowledge packs: `node bin/prompt-knowledge.js <deal-name>`
 
 ### 7e. Show confirmation card with research findings
-
-Instead of asking questions up front, show what Perplexity found:
 
 ```
 DEAL: irs-masterfile
@@ -688,7 +739,8 @@ Agency:      IRS (from USASpending)
 Program:     Individual Masterfile Modernization
 Incumbent:   Accenture Federal Services (from FPDS)
 Value:       $2.1B ceiling (from SAM.gov)
-Type:        IDIQ / TO
+Type:        recompete (auto-detected — incumbent found)
+Phase:       Mid Capture
 NAICS:       541512
 Vehicle:     GSA Alliant 2
 Status:      Active — recompete expected FY2026
@@ -699,15 +751,55 @@ Gaps:        Key personnel [RESEARCH NEEDED]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Files created:
   ✓ CLAUDE.md (31,646 chars)
-  ✓ space-instructions-perplexity.md (3,976 chars)
+  ✓ space-instructions-perplexity.md (3,976 chars) — deal-specific research domains
   ✓ references/irs-masterfile-intel.md
   ✓ knowledge/deal-context.md
   ✓ knowledge/maximus-corporate.md
 
-[Deploy] [Edit intel] [Re-research]
+[Deploy] [Advance phase] [Edit intel] [Re-research]
 ```
 
-**Total: 0 questions → deal name only → Perplexity fills everything → compiled project + intel + all outputs.**
+### 7f. Per-deal Perplexity Space instructions
+
+The compiled `space-instructions-perplexity.md` includes the standard Maximus SA persona, but the **Research Domains** section is customized per deal using `perplexity_space_append.research_domains` in the project config.
+
+**Auto-generate research domains from deal type + agency:**
+
+For **recompete** deals:
+```yaml
+research_domains: |
+  - <agency> <program> contract history, modifications, and performance (USASpending, FPDS)
+  - <incumbent> federal performance, CPARS, protest history, recent awards
+  - <agency> strategic plan, IG reports, GAO findings, budget justifications
+  - <agency> technology modernization initiatives, cloud migration, IT spend
+  - Maximus past performance and existing relationships at <agency>
+  - Competitive landscape: who else is pursuing <program> recompete
+```
+
+For **new-start** deals:
+```yaml
+research_domains: |
+  - <agency> mission priorities, strategic plan, leadership agenda
+  - <agency> IG/GAO findings related to <program area>
+  - <program area> technology landscape, vendor market, innovation trends
+  - Congressional testimony and budget trends for <agency>
+  - Maximus capabilities and past performance in <program area>
+  - Similar programs at other agencies — lessons learned, best practices
+```
+
+For **task-order** deals:
+```yaml
+research_domains: |
+  - <vehicle> task order history, award patterns, ceiling status
+  - <agency> recent task orders on <vehicle>, evaluation preferences
+  - Competitor rates and staffing patterns on <vehicle>
+  - <program> scope, deliverables, and performance standards
+  - Maximus existing task orders on <vehicle>
+```
+
+This means each deal's Perplexity Space is tuned to research THAT deal's specific intelligence needs.
+
+**Total: 0 questions → deal name only → Perplexity fills everything → compiled project + deal-specific intel + per-deal research space + all outputs.**
 
 ---
 
@@ -891,6 +983,115 @@ DEPLOY: <project-name>
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 DEPLOYED to 3 platforms.
+```
+
+---
+
+## Step 12 — ADVANCE: Move deal to next capture phase
+
+**Triggered when:** `/px-prompt --advance <deal-name>`
+
+Deals progress through the PAMASI lifecycle. This command advances the deal to the next phase, updates scoring expectations, runs phase-appropriate research, and flags what's missing.
+
+### 12a. Read current deal state
+
+1. Read `prompt-config.yaml` — get `capture_phase` and `deal_type`
+2. Read `references/<deal-name>-intel.md` — current intelligence
+3. Read latest compiled outputs — current scoring context
+
+### 12b. Determine next phase
+
+| Current Phase | Next Phase | Gate Criteria |
+|--------------|------------|---------------|
+| Shaping | Mid Capture | PAMASI at P→A. Sections I + XI GREEN. |
+| Mid Capture | Pre-Proposal | PAMASI at A→M→S. All 11 GREEN at mid-capture level. |
+| Pre-Proposal | Pre-Submission | PAMASI at S→I. All 11 GREEN at proposal level. Red Team complete. |
+| Pre-Submission | Orals | Zero deficiencies. All findings resolved. Compliance verified. |
+| Orals | Post-Submit | Q&A matrix complete. Presentations rehearsed. |
+
+### 12c. Run phase-transition Perplexity research
+
+Each phase transition triggers different research:
+
+**Shaping → Mid Capture:**
+```
+perplexity_research: "<deal-name> latest developments. New solicitation 
+activity on SAM.gov, draft RFP, industry day announcements, Q&A responses, 
+amendment history. Search SAM.gov, GovConWire, agency procurement forecasts."
+```
+
+**Mid Capture → Pre-Proposal:**
+```
+perplexity_research: "<deal-name> RFP release. Final solicitation, 
+evaluation criteria, Section L/M structure, proposal due date, 
+Q&A deadline, amendment status. Search SAM.gov, beta.sam.gov."
+```
+
+**Pre-Proposal → Pre-Submission:**
+```
+perplexity_research: "<deal-name> competitor activity. Who submitted 
+questions? Protest signals? Teaming announcements? Rate benchmarks 
+for <NAICS>. Search GovConWire, Bloomberg Government, GAO.gov."
+```
+
+**Pre-Submission → Orals:**
+```
+perplexity_ask: "For <agency> <program>, what are the most common 
+oral presentation evaluation criteria and question patterns? 
+Recent oral presentations at <agency> — format, duration, topics."
+```
+
+### 12d. Update deal config and outputs
+
+1. Update `capture_phase` in `prompt-config.yaml`
+2. Update deal intel with new research findings
+3. Recompile: `node bin/prompt-compile.js <deal-name> --diff`
+4. Update Perplexity Space research domains for the new phase
+5. Regenerate knowledge packs if deal context changed
+
+### 12e. Show phase transition report
+
+```
+PHASE ADVANCE: irs-masterfile
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Previous:    Shaping
+Current:     Mid Capture
+PAMASI:      P → A (Approach stage)
+Deal Type:   recompete
+
+Gate Check (Shaping → Mid Capture):
+  I  Customer & Mission    ✓ GREEN
+  XI Competitive           ✓ GREEN
+  II Architecture          ○ Not yet scored (expected at Mid Capture)
+
+New Intel:
+  • Draft RFP posted on SAM.gov (2026-03-15)
+  • Industry day scheduled for April 20
+  • Amendment 1 added CMMC L2 requirement
+
+Updated Files:
+  ✓ prompt-config.yaml (phase: Mid Capture)
+  ✓ references/irs-masterfile-intel.md (new findings appended)
+  ✓ space-instructions-perplexity.md (research domains updated)
+
+Next Gate: Pre-Proposal — requires all 11 GREEN at mid-capture level
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+### 12f. Flag missing items for next gate
+
+After advancing, check what's needed for the NEXT gate and flag gaps:
+
+```
+NEXT GATE CHECKLIST: Pre-Proposal
+  □ Solution architecture (Section II) — not started
+  □ Staffing model (Section X) — not started
+  □ Risk register (Section VII) — not started
+  □ Win themes with FBP proof (Section XI) — 1 of 3 complete
+  □ Competitive ghost matrix — not started
+  
+  5 items needed before Pre-Proposal gate.
+  Run /px-prompt --advance irs-masterfile when ready.
 ```
 
 ---
