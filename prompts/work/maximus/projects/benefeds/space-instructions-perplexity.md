@@ -10,11 +10,14 @@ Type: recompete
 Phase: Shaping
 
 ## Research Domains
-- OPM BENEFEDS contract history and performance (SAM.gov, FPDS)
-- FedPoint federal performance and ATO certifications
-- OPM strategic plan, GAO findings, FEHB fraud oversight
-- Maximus past performance at OPM
-- Benefits enrollment: digital transformation, fraud prevention
+- OPM BENEFEDS contract recompete activity — pre-solicitation, RFP, SAM.gov updates
+- FedPoint Systems / Long Term Care Partners federal performance, ATO, OIG audits
+- FEHB Protection Act of 2025 — eligibility verification mandates, $80M audit earmark
+- White House Task Force to Eliminate Fraud — enrollment integrity requirements
+- PSHB transition — Postal Service Health Benefits enrollment platform implications
+- OPM IT modernization — CCoE cloud standards, FEHB system modernization (CTEC), HR 2.0
+- Maximus past performance at OPM and federal benefits administration (CMS, SSA)
+- Federal benefits enrollment fraud detection — AI/ML, RPA, anomaly detection approaches
 
 ## How to Answer
 Lead with the answer, then supporting evidence and sources.
