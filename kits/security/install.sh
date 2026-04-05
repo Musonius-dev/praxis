@@ -10,7 +10,7 @@ echo "Checking optional CLI tools..."
 echo ""
 
 check "trivy"     "brew install trivy  OR  https://aquasecurity.github.io/trivy" "optional"
-check "deepsource" "curl -fsSL https://cli.deepsource.com/install | sh" "optional"
+check "gh"        "brew install gh  OR  https://cli.github.com" "optional"
 check "rg"        "brew install ripgrep  OR  apt-get install ripgrep"
 
 kit_check_summary

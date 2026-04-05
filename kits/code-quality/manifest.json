@@ -1,7 +1,7 @@
 {
   "name": "code-quality",
   "version": "1.0.0",
-  "description": "DeepSource-equivalent code quality enforcement for Claude Code. Parallel deterministic gate (SAST, secrets, SCA, IaC) + AI review layer (over-engineering, smells, structure, performance).",
+  "description": "GHAS-complementary code quality enforcement for Claude Code. Parallel deterministic gate (SAST, secrets, SCA, IaC) + AI review layer (over-engineering, smells, structure, performance).",
   "activation": "/kit:code-quality",
   "requires": ["opengrep", "trufflehog", "osv-scanner", "checkov", "jq", "bc"],
   "skills": [

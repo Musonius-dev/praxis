@@ -26,7 +26,6 @@
       {"name": "gh", "minVersion": "2.0.0", "install": "brew install gh"}
     ],
     "optional": [
-      {"name": "deepsource", "feature": "code-analysis", "install": "curl -fsSL https://cli.deepsource.com/install | sh"},
       {"name": "osv-scanner", "feature": "dep-audit", "install": "go install github.com/google/osv-scanner/cmd/osv-scanner@latest"},
       {"name": "pip-audit", "feature": "dep-audit-python", "install": "pip install pip-audit"},
       {"name": "docker", "feature": "docker-sandbox", "install": "brew install --cask docker"},

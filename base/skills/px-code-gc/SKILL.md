@@ -197,5 +197,5 @@ Do NOT auto-remediate. Always ask first.
 ---
 
 ## Removal Condition
-Remove when static analysis tooling (DeepSource or equivalent) is wired
+Remove when static analysis tooling (CodeQL or equivalent) is wired
 into CI and covers all six entropy categories with automated reporting.

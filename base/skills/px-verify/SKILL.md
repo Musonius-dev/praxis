@@ -14,9 +14,9 @@ Execute in order, showing actual output (never assertions):
 4. **Build** (if applicable) → show output
 5. **Security scan** (if tools available):
    - **Go**: `gosec ./...` OR `golangci-lint run --enable=gosec` (if golangci-lint available)
-   - **DeepSource**: `deepsource issues list <file>` for files in diff (if deepsource CLI available)
+   - **CodeQL**: `gh code-scanning alert list` for open alerts (if gh CLI available)
    - If either tool finds HIGH/CRITICAL: treat as blocking — must fix before proceeding.
-   - If tools not installed: skip with advisory note, do not block. DeepSource cloud validates on push.
+   - If tools not installed: skip with advisory note, do not block. CodeQL validates on push via GitHub Actions.
 6. **Quality gate** → run `/px-quality-gate` on changed files → BLOCK on naming/prose/structure violations. See `px-quality-gate` skill for full check list.
 7. **Functional check** — ask: "Is there a smoke test, `terraform plan` output, or browser check needed for this milestone?" If yes: block until user confirms it passed. If no: proceed.
 

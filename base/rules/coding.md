@@ -53,7 +53,7 @@ Code quality is enforced proactively, not reactively:
 - **Layer 1 (Principles)**: `code-excellence.md`, `engineering-judgment.md` — shape reasoning
 - **Layer 2 (Constraints)**: `code-quality.md` — hard limits during generation
 - **Layer 3 (Verification)**: `/px-self-verify` — prove correctness before commit
-- **Safety net**: DeepSource (cloud) — comprehensive analysis on push
+- **Safety net**: CodeQL + GitHub Advanced Security — comprehensive analysis on push
 
 Detailed rules: error handling, naming, testing, dependencies, simplicity, and
 judgment live in those files. This file covers only what they do not:
@@ -67,8 +67,8 @@ Single-file:
 - `go vet <file>` / `shellcheck <file>` / `hadolint Dockerfile` / `markdownlint <file>.md`
 
 Project-level:
-- `deepsource issues --path <file>` — query DeepSource findings
-- `deepsource repo status` — repo analysis status
+- `gh code-scanning alert list` — list CodeQL findings
+- `gh api repos/{owner}/{repo}/code-scanning/alerts --jq '.[].rule.description'` — query alerts
 - `govulncheck ./...`
 - `trivy config .`
 

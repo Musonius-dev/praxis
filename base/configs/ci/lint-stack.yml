@@ -1,6 +1,6 @@
 # Lint Stack — CI Template
 # Copy to: .github/workflows/lint-stack.yml
-# DeepSource handles comprehensive analysis via GitHub app integration.
+# CodeQL handles comprehensive analysis via GitHub Actions (codeql.yml).
 # This workflow provides basic file hygiene checks only.
 
 name: Lint Stack

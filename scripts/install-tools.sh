@@ -114,7 +114,7 @@ echo ""
 echo "=== Done. Run 'bash scripts/install-tools.sh --all' to install all stacks. ==="
 echo ""
 echo "Installed tools:"
-for tool in shellcheck shfmt jq gitleaks goimports golangci-lint govulncheck tflint trivy infracost hadolint deepsource yamllint markdownlint commitlint; do
+for tool in shellcheck shfmt jq gitleaks goimports golangci-lint govulncheck tflint trivy infracost hadolint yamllint markdownlint commitlint; do
   if command -v "$tool" &>/dev/null; then
     printf "  ✓ %s\n" "$tool"
   else
