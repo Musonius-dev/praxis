@@ -1,0 +1,56 @@
+deal: benefeds
+client: maximus
+description: OPM BeneFeds — federal benefits enrollment and premium administration platform recompete
+mode: compiled
+profile: maximus-sa
+version: "1.0"
+deal_type: recompete
+capture_phase: Shaping
+
+platforms:
+  - claude-project
+  - perplexity-space
+
+vars:
+  agency: "Office of Personnel Management (OPM)"
+  program_name: "BENEFEDS"
+  incumbent: "FedPoint Systems LLC (Long Term Care Partners / John Hancock)"
+  contract_value: "$500M ceiling"
+  naics: "518210, 524292, 541512"
+  pop: "Jan 2023 – Dec 2026"
+
+knowledge_files:
+  - file: references/benefeds-intel.md
+    description: "Deal intelligence — contract data, incumbent, agency context, Maximus positioning"
+
+knowledge_packs:
+  - template: deal-context
+    output: deal-context.md
+    targets: [claude-project, perplexity-space]
+    vars:
+      agency: "Office of Personnel Management (OPM)"
+      program_name: "BENEFEDS — Federal Employee Benefits Enrollment & Premium Administration"
+      incumbent: "FedPoint Systems LLC (wholly owned by John Hancock Life & Health Insurance)"
+      contract_value: "$500M ceiling (2023-2026)"
+      naics: "518210, 524292, 541512"
+      set_aside: "Full and open competition"
+      deal_type: "recompete"
+      capture_phase: "Shaping"
+      key_programs: "FEDVIP (dental/vision), FSAFEDS (flex spending), FLTCIP (long-term care)"
+      enrollment_scale: "1M+ transactions during annual open season, 1,000+ seasonal staff"
+
+  - template: corporate-reference
+    output: maximus-corporate.md
+    targets: [claude-project, perplexity-space]
+    vars:
+      company_name: "Maximus Inc."
+
+overrides:
+  perplexity_space_append:
+    research_domains: |
+      - OPM BENEFEDS contract history, modifications, and performance (USASpending, FPDS, SAM.gov)
+      - FedPoint Systems LLC federal performance, ATO certifications, service metrics
+      - OPM strategic plan, IG/GAO findings on FEHB fraud, congressional oversight hearings
+      - OPM technology modernization: IT Strategic Plan 2023-2026, customer experience initiatives
+      - Maximus past performance and existing relationships at OPM (retirement services contract)
+      - Federal benefits enrollment platform trends: digital transformation, fraud prevention, seasonal surge staffing

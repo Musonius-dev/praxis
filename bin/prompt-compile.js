@@ -6,7 +6,8 @@ const path = require('path');
 const yaml = require('js-yaml');
 
 const {
-  TARGETS,
+  ALL_TARGETS,
+  DEFAULT_TARGETS,
   PROMPTS_DIR,
   WORK_DIR,
   PERSONAL_DIR,
@@ -87,10 +88,9 @@ function validateStandalone(projectName, projectDir, projectConfig) {
   console.log(`\nValidating standalone: ${projectName}`);
 
   const inventory = [
-    { file: 'system-prompt.md', budget: Infinity, required: true, label: 'System Prompt (Source)' },
-    { file: 'CLAUDE.md', budget: Infinity, required: false, label: 'Claude Code' },
+    { file: 'system-prompt.md', budget: 5000, required: true, label: 'System Prompt (Source)' },
     { file: 'space-instructions-perplexity.md', budget: CHAR_BUDGETS['perplexity-space'], required: false, label: 'Perplexity Space' },
-    { file: 'project-instructions-claude-desktop.md', budget: CHAR_BUDGETS['claude-project'], required: false, label: 'Claude Desktop' },
+    { file: 'CLAUDE.md', budget: Infinity, required: false, label: 'Claude Code' },
   ];
 
   const results = [];
@@ -303,7 +303,7 @@ function main() {
       console.log('No projects found.');
       process.exit(0);
     }
-    console.log(`${'Project'.padEnd(28)} ${'Mode'.padEnd(12)} ${'System Prompt'.padEnd(15)} ${'Claude Desktop'.padEnd(15)} ${'Perplexity'.padEnd(15)} ${'CLAUDE.md'.padEnd(12)} Refs`);
+    console.log(`${'Project'.padEnd(28)} ${'Mode'.padEnd(12)} ${'System Prompt'.padEnd(15)} ${'Claude Desktop'.padEnd(15)} ${'Perplexity'.padEnd(15)} Refs`);
     console.log('-'.repeat(105));
     for (const proj of allProjects) {
       const cfgPath = path.join(proj.dir, 'prompt-config.yaml');
@@ -319,7 +319,7 @@ function main() {
         ? fs.readdirSync(refsDir).filter((f) => f.endsWith('.md')).length
         : 0;
       console.log(
-        `${proj.name.padEnd(28)} ${mode.padEnd(12)} ${fileStatus('system-prompt.md').padEnd(15)} ${fileStatus('project-instructions-claude-desktop.md').padEnd(15)} ${fileStatus('space-instructions-perplexity.md').padEnd(15)} ${fileStatus('CLAUDE.md').padEnd(12)} ${refCount}`
+        `${proj.name.padEnd(28)} ${mode.padEnd(12)} ${fileStatus('system-prompt.md').padEnd(15)} ${fileStatus('project-instructions-claude-desktop.md').padEnd(15)} ${fileStatus('space-instructions-perplexity.md').padEnd(15)} ${refCount}`
       );
     }
     process.exit(0);
@@ -339,7 +339,7 @@ function main() {
     console.log('\n\x1b[1mPROMPT ENGINE DASHBOARD\x1b[0m');
     console.log('\x1b[90m' + '━'.repeat(110) + '\x1b[0m');
     console.log(
-      `${'Project'.padEnd(24)} ${'Mode'.padEnd(12)} ${'Perplexity'.padEnd(14)} ${'Claude Proj'.padEnd(14)} ${'CLAUDE.md'.padEnd(14)} ${'Refs'.padEnd(6)} ${'Updated'.padEnd(12)} Stale?`
+      `${'Project'.padEnd(24)} ${'Mode'.padEnd(12)} ${'Claude Proj'.padEnd(14)} ${'Perplexity'.padEnd(14)} ${'Refs'.padEnd(6)} ${'Updated'.padEnd(12)} Stale?`
     );
     console.log('\x1b[90m' + '─'.repeat(110) + '\x1b[0m');
 
@@ -372,7 +372,7 @@ function main() {
       const stale = daysSince > STALE_DAYS ? '\x1b[31mYes\x1b[0m' : '\x1b[32mNo\x1b[0m';
 
       console.log(
-        `${proj.name.padEnd(24)} ${mode.padEnd(12)} ${fileBudget('space-instructions-perplexity.md', CHAR_BUDGETS['perplexity-space']).padEnd(23)} ${fileBudget('project-instructions-claude-desktop.md', CHAR_BUDGETS['claude-project']).padEnd(23)} ${fileBudget('CLAUDE.md', Infinity).padEnd(23)} ${String(refCount).padEnd(6)} ${updated.padEnd(12)} ${stale}`
+        `${proj.name.padEnd(24)} ${mode.padEnd(12)} ${fileBudget('project-instructions-claude-desktop.md', CHAR_BUDGETS['claude-project']).padEnd(23)} ${fileBudget('space-instructions-perplexity.md', CHAR_BUDGETS['perplexity-space']).padEnd(23)} ${String(refCount).padEnd(6)} ${updated.padEnd(12)} ${stale}`
       );
     }
 
@@ -388,13 +388,15 @@ function main() {
 
   // Parse --target flag
   const targetIdx = args.indexOf('--target');
-  let targets = TARGETS;
+  let targets = DEFAULT_TARGETS;
   if (targetIdx !== -1 && args[targetIdx + 1]) {
     const targetArg = args[targetIdx + 1];
-    if (TARGETS.includes(targetArg)) {
+    if (ALL_TARGETS.includes(targetArg)) {
       targets = [targetArg];
-    } else if (targetArg !== 'all') {
-      fail(`Unknown target: ${targetArg}. Use: ${TARGETS.join(', ')}, all`);
+    } else if (targetArg === 'all') {
+      targets = ALL_TARGETS;
+    } else {
+      fail(`Unknown target: ${targetArg}. Use: ${ALL_TARGETS.join(', ')}, all`);
     }
   }
 
