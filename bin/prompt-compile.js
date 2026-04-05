@@ -16,7 +16,7 @@ const {
   loadBlocks,
   applyOverrides,
   loadClientConfig,
-  discoverAllDeals,
+  discoverAllWorkProjects,
   resolveProject,
   mergeClientDealConfig,
 } = require('../lib/loader');
@@ -35,8 +35,8 @@ const PROJECTS_DIR = path.join(PROMPTS_DIR, 'projects');
 function discoverAllProjects() {
   const results = [];
 
-  // New hierarchy: clients/*/deals/*/
-  for (const entry of discoverAllDeals()) {
+  // New hierarchy: work/*/projects/* + personal/*
+  for (const entry of discoverAllWorkProjects()) {
     results.push({ name: entry.displayName, dir: entry.dealDir, client: entry.client, deal: entry.deal, clientDir: entry.clientDir });
   }
 
