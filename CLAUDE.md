@@ -71,6 +71,7 @@ format: # N/A — no formatter configured
 - **Escaped spaces in config paths** — Vault paths in `praxis.config.json` must use literal spaces, not `\\ ` escapes. `jq -r` outputs escaped backslashes verbatim, breaking filesystem access.
 - **Secret-scan hook scans entire file** — The PreToolUse secret-scan hook checks the whole file on any edit, not just the diff. Files containing secret-matching regex patterns (like the `/px-ship` skill) cannot be edited via the Edit tool — use `cat >>` append instead.
 - **gh auth identity mismatch** — Personal repos need `gh auth switch --user <personal>` before push. The active `gh` account defaults to work identity, which lacks push access to personal repos.
+- **Perplexity assembler must not use blocks** — Perplexity Spaces is a search engine, not generative AI. Never inject domain expertise, behavioral constraints, skills, or format blocks into Perplexity output. Perplexity needs: Purpose, Deal Context, Research Domains, How to Answer, Accuracy Standards — nothing else.
 
 ## Project-Specific Rules
 
