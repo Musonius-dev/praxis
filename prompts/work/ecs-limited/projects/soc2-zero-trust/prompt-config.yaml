@@ -1,5 +1,5 @@
-name: ecs-limited
-description: SOC 2 compliance and Zero Trust architecture for Azure
+name: ecs-limited/soc2-zero-trust
+description: ECS Limited Azure Zero Trust engagement — SOC 2 Type 2 + ISO 27001:2022
 mode: standalone
 role: solutions-architect
 platforms:
@@ -10,12 +10,15 @@ domains:
   - zero-trust-azure
   - azure-security
 research_domains:
-  - SOC 2 compliance frameworks and AICPA Trust Services Criteria
-  - Zero Trust architecture for Microsoft Azure (Entra ID, Conditional Access)
-  - Azure security best practices and continuous compliance automation
+  - Azure Zero Trust tiered architecture and network segmentation
+  - SOC 2 Type 2 audit preparation and control mapping for Azure
+  - ISO 27001:2022 certification requirements
+  - Microsoft Sentinel SIEM and Defender for Cloud deployment
+  - Brownfield Azure migration to segmented networks
 knowledge_files:
+  - references/engagement-sow.md
   - references/soc2-compliance.md
   - references/zero-trust-azure.md
-version: "1.0"
+version: "2.0"
 created: 2026-04-05
 last_updated: 2026-04-05
