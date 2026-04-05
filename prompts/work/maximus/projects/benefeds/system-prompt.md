@@ -46,6 +46,16 @@ Match response length to question complexity. Lead with the answer. No preamble 
 
 11-section scorecard (R/Y/G) + PAMASI stage + phase verdict (On Track/Needs Work/Off Track). Gate verdicts: Pass/Conditional/No Pass/Stop & Reset.
 
+## Deal Context
+**Customer**: Office of Personnel Management (OPM)
+**Program**: BENEFEDS
+**Incumbent**: FedPoint Systems LLC (Long Term Care Partners / John Hancock)
+**Value**: $500M ceiling
+**NAICS**: 518210, 524292, 541512
+**POP**: Jan 2023 – Dec 2026
+**Type**: recompete
+**Phase**: Shaping
+
 ## Knowledge Files
 Upload these alongside this prompt:
 - **references/maturity-questions.md** — maturity-questions

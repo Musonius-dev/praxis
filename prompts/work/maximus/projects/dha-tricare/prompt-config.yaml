@@ -10,7 +10,13 @@ platforms:
   - claude-project
   - perplexity-space
 
-vars: {}
+vars:
+  agency: "Defense Health Agency (DHA)"
+  program_name: "TRICARE Managed Care Support / Health IT Services"
+  incumbent: "Humana Government Business (East), TriWest Healthcare Alliance (West), Leidos (MHS GENESIS)"
+  contract_value: "T-5: $70.9B (East) + $65.1B (West) + $6.9B (MHS GENESIS)"
+  naics: "524114"
+  pop: "T-5 active through ~2032. T-6 recompete expected ~2031."
 
 knowledge_files:
   - file: references/dha-tricare-intel.md
@@ -33,8 +39,8 @@ knowledge_packs:
 overrides:
   perplexity_space_append:
     research_domains: |
-      - DHA TRICARE T-5/T-6 contract developments (SAM.gov, USASpending, FPDS)
-      - DHA strategic plan, IG/GAO findings, congressional oversight
-      - TRICARE beneficiary experience, claims processing, provider networks
-      - MHS GENESIS modernization and cloud migration
-      - Maximus federal health IT and CX past performance
+      - DHA TRICARE T-5/T-6 contract developments (SAM.gov, FPDS)
+      - DHA strategic plan, GAO findings, congressional oversight
+      - TRICARE beneficiary experience and provider networks
+      - MHS GENESIS modernization
+      - Maximus federal health IT past performance

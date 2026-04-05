@@ -42,7 +42,7 @@ Platform outputs use suffixed filenames so users can distinguish them at a glanc
 | Platform | Output Filename | Budget |
 |----------|----------------|--------|
 | Claude Projects | `system-prompt.md` | 5,000 chars |
-| Perplexity Spaces | `space-instructions-perplexity.md` | 4,000 chars |
+| Perplexity Spaces | `space-instructions-perplexity.md` | 4,500 chars |
 
 Each project has exactly **2 output files** — one per platform, same filenames regardless of mode.
 - `system-prompt.md` — standalone: hand-written, compiled: generated from profile blocks
@@ -370,7 +370,7 @@ Read the full `system-prompt.md` as source.
 
 ### 3a. Generate Perplexity Space instructions
 
-**Target:** `space-instructions-perplexity.md` | **Budget:** under 4,000 chars
+**Target:** `space-instructions-perplexity.md` | **Budget:** under 4,500 chars
 
 **Include:** identity, domain expertise, research domains, source priority, answer format, key frameworks (by name only), reasoning approach, accuracy standards, anti-hallucination rules
 **Exclude:** internal templates, scoring matrices, reference file content, deployment details, full tables
@@ -415,7 +415,7 @@ Think step-by-step: Understand the question → search sources → analyze findi
 
 After generating, check:
 - `system-prompt.md` under 5,000 chars
-- `space-instructions-perplexity.md` under 4,000 chars
+- `space-instructions-perplexity.md` under 4,500 chars
 
 If over budget: flag and suggest sections to trim.
 
@@ -509,7 +509,7 @@ Check each file against these criteria:
 
 **Budget checks:**
 - `system-prompt.md` under 5,000 chars?
-- `space-instructions-perplexity.md` under 4,000 chars?
+- `space-instructions-perplexity.md` under 4,500 chars?
 
 **Currency checks (via Perplexity):**
 - Are domain-specific terms, standards, and versions still current?
@@ -522,7 +522,7 @@ Show a structured report:
 |---------------------------|--------|-----------------------------------|
 | Quality Controls section  | PASS   | Present in system-prompt.md       |
 | Anti-Hallucination        | FAIL   | Missing — will add                |
-| Budget: Perplexity        | PASS   | 2,392 / 4,000 chars              |
+| Budget: Perplexity        | PASS   | 2,392 / 4,500 chars              |
 | File naming               | FAIL   | Uses old convention — will rename |
 | Knowledge files           | WARN   | 0 reference files — consider adding |
 ```

@@ -12,6 +12,14 @@ SSEB simulation: score only what's on the page against Section M. Ratings: Outst
 11-section assessment (Customer/Architecture/Process/Artifacts/Planning/Assumptions/Risks/Dependencies/Cyber/Cost/Competitive). PAMASI maturity: P→A→M→A→S→I. Gates: Shaping=P, Mid Capture=A-M, Pre-Proposal=S, Pre-Submission=I.
 BLUF every paragraph. FBP every claim. Active voice, SHALL→WILL, 70/30 mission/company. Ban "robust/world-class/seamless/leverage/synergy." Hierarchy: Approach→Framework→Methodology→Process (never conflate).
 
+## Deal Context
+Customer: Office of Personnel Management (OPM)
+Program: BENEFEDS
+Incumbent: FedPoint Systems LLC (Long Term Care Partners / John Hancock)
+Value: $500M ceiling
+Type: recompete
+Phase: Shaping
+
 ## Research Domains
 - OPM BENEFEDS contract history and performance (SAM.gov, FPDS)
 - FedPoint federal performance and ATO certifications

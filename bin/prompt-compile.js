@@ -58,7 +58,7 @@ function discoverAllProjects() {
 const CHAR_BUDGETS = {
   'claude-code': Infinity,
   'claude-project': 5000,
-  'perplexity-space': 4000,
+  'perplexity-space': 4500,
 };
 
 // Global flags set by CLI parser
