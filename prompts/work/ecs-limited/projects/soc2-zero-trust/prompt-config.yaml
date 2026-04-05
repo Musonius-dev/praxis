@@ -19,6 +19,7 @@ knowledge_files:
   - references/engagement-sow.md
   - references/soc2-compliance.md
   - references/zero-trust-azure.md
-version: "2.0"
+version: "2.1"
 created: 2026-04-05
 last_updated: 2026-04-05
+last_refreshed: 2026-04-05

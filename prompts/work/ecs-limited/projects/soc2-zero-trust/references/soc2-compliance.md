@@ -1,6 +1,7 @@
 ---
 domain: soc2-compliance
 generated: 2026-04-05
+refreshed: 2026-04-05
 source: perplexity-research
 ---
 
@@ -20,11 +21,11 @@ source: perplexity-research
 - **Points of Focus**: Updated in 2022 AICPA SOC 2 Audit Guide — provide clarity on risks, technologies, and vulnerabilities
 
 ## Current Standards & Frameworks
-- **AICPA TSC Framework**: 2017 base criteria, 2022 revised Points of Focus (effective through 2026)
-- **2022 Revisions**: Clarified risk assessments (CC1.3/CC1.5 for privacy, CC2.1-2.3 for data management), disclosures on risks/technologies. No core TSC changes.
-- **2025-2026 Trends**: Greater emphasis on zero-trust, vendor risk (CC9.2), continuous monitoring, AI/cloud threat vectors
-- **Confidentiality criteria** now included in 64.4% of reports (up from 34%)
-- **Cross-framework alignment**: SOC 2 commonly mapped to ISO 27001, HIPAA, CMMC
+- **AICPA TSC Framework**: 2017 base criteria remain current. No core criteria changes since publication.
+- **2022 Points of Focus Revision** (September 2022): Updated guidance for risk assessments (CC1.3/CC1.5 for privacy, CC2.1-2.3 for data management), disclosures on risks/technologies. Core TSC criteria unchanged.
+- **Confidentiality criteria**: Included in 64.4% of SOC 2 reports, up from 34% (source: 2024 CBIZ SOC 2 Benchmark Study, analyzing 73 reports)
+- **ISO 27001:2022 alignment**: Transition deadline was October 31, 2025. All ISO 27001:2013 certificates expired. AICPA published official SOC 2 ↔ ISO 27001:2022 control mapping.
+- **2025-2026 Trends**: Greater emphasis on zero-trust architecture, vendor risk (CC9.2), continuous monitoring, AI/cloud threat vectors, and third-party risk management
 
 ## Best Practices
 - Treat compliance as an ongoing operation, not a one-time project
@@ -56,7 +57,9 @@ source: perplexity-research
 - CC9: Risk mitigation (vendor management, business continuity)
 
 ## Sources
-- AICPA SOC 2 Audit Guide (2022 revision)
-- Konfirmity: SOC 2 changes in 2026
-- Sprinto: SOC 2 updates
-- Secureframe: Trust Services Criteria guide
+- AICPA Trust Services Criteria (2017), with September 2022 Points of Focus revision
+- AICPA SOC 2 Audit Guide (2022 revision) — current through 2026
+- CBIZ SOC 2 Benchmark Study (2024) — 64.4% Confidentiality adoption statistic, 73 reports analyzed
+- ISO/IEC 27001:2022 — published October 2022, mandatory transition by October 31, 2025
+- AICPA SOC 2 ↔ ISO 27001:2022 Control Mapping (official publication)
+- Perplexity research refresh: April 2026

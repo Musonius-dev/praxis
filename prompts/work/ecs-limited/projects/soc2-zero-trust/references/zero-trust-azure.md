@@ -1,6 +1,7 @@
 ---
 domain: zero-trust-azure
 generated: 2026-04-05
+refreshed: 2026-04-05
 source: perplexity-research
 ---
 
@@ -16,12 +17,12 @@ source: perplexity-research
 - **Micro-segmentation**: Granular network isolation using Azure Firewall, NSGs, and Private Link
 
 ## Current Standards & Frameworks
-- **NIST SP 800-207**: Zero Trust Architecture reference — defines policy enforcement points (PEP), policy decision points (PDP)
-- **CISA Zero Trust Maturity Model** (Identity Pillar):
+- **NIST SP 800-207**: Zero Trust Architecture (August 2020) — remains the authoritative reference. Defines policy enforcement points (PEP), policy decision points (PDP). No revisions issued; companion documents include NIST SP 1800-35 (ZTA implementation guides)
+- **CISA Zero Trust Maturity Model v2.0**: Updated from v1.0 — added "Optimal" maturity stage. Covers 5 pillars: Identity, Devices, Networks, Applications & Workloads, Data
   - Initial: Entra ID as IdP, MFA for all apps/guests, Conditional Access with entity attributes
   - Advanced: Phishing-resistant MFA (FIDO2/CBA), app migration, risk-based policies
   - Optimal: Real-time risk (ID Protection/Sentinel), CAE, automated governance, cross-tenant sync
-- **Microsoft Zero Trust Maturity Model** (2025 edition): Assess across identity, devices, network, data pillars
+- **Microsoft Zero Trust guidance** (2025-2026): Extended to cover AI workloads — verify explicitly now includes AI agent identity and behavior evaluation
 
 ## Best Practices
 
@@ -48,11 +49,17 @@ source: perplexity-research
 - Use Global Secure Access for compliant network checks
 
 ### Monitoring
-- Deploy Microsoft Defender for Cloud; target Azure Secure Score >85%
-- Use Microsoft Sentinel for SIEM/SOAR with UEBA analytics
-- Deploy Defender XDR for extended detection and response
+- Deploy Microsoft Defender for Cloud — risk-based Cloud Secure Score (March 2026) now includes severity-based risk assignment for prioritization
+- Use Microsoft Sentinel for SIEM/SOAR with UEBA analytics — Codeless Connector Framework (CCF) Push in preview (February 2026), legacy Data Collector API retiring September 14, 2026
+- Deploy Defender XDR for extended detection and response — automatic attack disruption now enforces Zero Trust containment (account lockdown)
+- Deploy Defender External Attack Surface Management (EASM) for internet-facing asset discovery and exposure scanning
 - Enable diagnostic logging for all identity, network, and application events
 - Configure automated incident response playbooks
+
+### Network (2026 Updates)
+- Azure Firewall **Draft & Deploy** enables collaborative policy drafts without live disruption
+- Confidential VMs (DCesv6, ECesv6 series) with Intel TDX for hardware-isolated workloads (GA)
+- Microsoft Sovereign Cloud added disconnected operations for air-gapped Zero Trust governance
 
 ## Implementation Steps (Recommended Order)
 1. Deploy Conditional Access baseline policies in report-only mode
@@ -79,8 +86,13 @@ source: perplexity-research
 | Encryption | CC6.7 (Transmission/Storage) |
 
 ## Sources
-- Microsoft: Zero Trust deployment guide for Azure
-- Microsoft Learn: CISA Zero Trust Maturity Model — Identity pillar
-- NIST SP 800-207: Zero Trust Architecture
+- NIST SP 800-207: Zero Trust Architecture (August 2020) — current authoritative reference
+- NIST SP 1800-35: Implementing a Zero Trust Architecture (companion practice guide)
+- CISA Zero Trust Maturity Model v2.0 — 5-pillar framework with Initial/Advanced/Optimal stages
+- Microsoft Learn: Zero Trust deployment guide for Azure (continuously updated)
+- Microsoft Learn: CISA Zero Trust Maturity Model — Identity pillar alignment
 - Microsoft Security Blog: Secure Future Initiative and Zero Trust (May 2025)
-- GitHub: Conditional Access baseline policies (October 2025 v2025-10)
+- Microsoft Defender for Cloud release notes (March 2026) — risk-based Secure Score, severity assignment
+- Microsoft Sentinel: CCF Push connector preview (February 2026 drop)
+- GitHub: Conditional Access baseline policies (maintained, latest updates through 2025-2026)
+- Perplexity research refresh: April 2026
